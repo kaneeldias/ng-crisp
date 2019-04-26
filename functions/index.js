@@ -30,11 +30,7 @@ exports.calcWeekConversationsCreated = functions.https.onRequest((req, res) => {
     db.collection('conversations').get()
         .then(function (querySnapshot) {
             querySnapshot.forEach(function (doc) {
-                var created_at = doc.data().created_at;
-                var d = new Date(created_at + ":00");
-                var day = d.getDay(),
-                    diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-                var created_at_mon = new Date(d.setDate(diff)).toISOString().split("T")[0];
+                var created_at_mon = getCreatedWeek(doc.created_at);
                 if (weeks[created_at_mon] === undefined) {
                     count++;
                     weeks_list.push(created_at_mon);
@@ -74,7 +70,7 @@ exports.calcWeekConversationsCreated = functions.https.onRequest((req, res) => {
         })
 });
 
-exports.onConversationWrite = functions.firestore
+/*exports.onConversationWrite = functions.firestore
     .document('conversations/{conversation_id}')
     .onWrite((change, context) => {
         var before, after;
@@ -88,7 +84,7 @@ exports.onConversationWrite = functions.firestore
             ref = firebase.database().ref('main-record/'+week+'/conversations_created');    
             ref.transaction(function(count) {   
                 return count + 1;
-            });*/
+            });
         }
         if (change.after.data() === undefined){
             week = getCreatedWeek(change.before.data().created_at);
@@ -98,12 +94,12 @@ exports.onConversationWrite = functions.firestore
             ref = firebase.database().ref('main-record/'+week+'/conversations_created');    
             ref.transaction(function(count) {   
                 return count - 1;
-            });*/
+            });
         }
 
         return;
 
-    });
+    });*/
 
 exports.resetConversationsCreated = functions.https.onRequest((req, res) => {
     db.collection('main-record').get()
@@ -118,6 +114,7 @@ exports.resetConversationsCreated = functions.https.onRequest((req, res) => {
 });
 
 getCreatedWeek = function (date) {
+    date = date.split(" ")[0];
     var d = new Date(date);
     var day = d.getDay(),
     diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday

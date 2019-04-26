@@ -44,6 +44,7 @@ export class MainWeek{
             })
     }
 
+
     public validate(){
         console.log(this)
         if(this.helpdesk_reads == undefined || this.helpdesk_reads < 0) return false;

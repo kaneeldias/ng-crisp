@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Papa } from 'ngx-papaparse';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Conversation } from 'src/app/conversation/conversation';
 
 @Component({
   selector: 'app-upload-conversations',
@@ -8,13 +9,14 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
   styleUrls: ['./upload-conversations.component.css']
 })
 
+
 export class UploadConversationsComponent implements OnInit {
 
   selected: boolean = false;
   status: string = "Upload File";
-  uploadCount: number;
-  successUploadCount: number;
-  records: number;
+  uploadCount: number = 0;
+  successUploadCount: number = 0;
+  records: number = 0;
 
   private data;
   private collection: AngularFirestoreCollection;
@@ -31,14 +33,15 @@ export class UploadConversationsComponent implements OnInit {
   }
 
   onChange(event) {
+    var self = this;
     this.selected = true;
     this.status = "reading..."
     var files = event.srcElement.files;
     // console.log(files)
     let fileReader = new FileReader();
     fileReader.readAsText(files[0]);
-    fileReader.onload = (e) => {
-      this.parse(fileReader.result);
+    fileReader.onload = function () {
+      self.parse(fileReader.result);
     }
   }
 
@@ -86,21 +89,54 @@ export class UploadConversationsComponent implements OnInit {
 
   private store(i, finishedCallback) {
     var self = this;
-    if (i >= this.data.length){
+    if (i >= this.data.length) {
       finishedCallback(self);
       return;
     }
-      
+
+    var record = this.data[i];
+    var conversation = new Conversation();
+
     try {
+      conversation.$conversation_id = record[0];
+      conversation.$operator_id = record[1];
+      conversation.$created_at = record[2];
+
+      let promise = conversation.save()
+        .then(function () {
+          self.successUploadCount++;
+        })
+        .catch(function (error) {
+          console.log("Error inserting row #" + i + ": " + error);
+        })
+        .finally(function () {
+          self.uploadCount++;
+          self.store(i + 1, finishedCallback);
+        })
+
+    }
+    catch (error) {
+      console.log("Error inserting row #" + i + ": " + error);
+    }
+
+
+    /*try {
       var record = this.data[i];
       var doc = {
         operator_id: record[1],
         created_at: record[2]
       }
-
+ 
+    
+ 
       this.collection.doc(record[0]).set(doc, {'merge':true})
         .then(function () {
-          this.
+          var created_at = doc.created_at;
+          var d = new Date(created_at + ":00");
+          var day = d.getDay(),
+          diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+          var created_at_mon = new Date(d.setDate(diff)).toISOString().split("T")[0];    
+ 
           self.successUploadCount++;
           self.uploadCount++;
           self.store(i + 1, finishedCallback);
@@ -113,7 +149,7 @@ export class UploadConversationsComponent implements OnInit {
       console.log("Error inserting row #" + i);
         self.uploadCount++;
         self.store(i + 1, finishedCallback)
-    }
+    }*/
   }
 
   private validate(header): boolean {

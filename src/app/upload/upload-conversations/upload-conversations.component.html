@@ -10,7 +10,7 @@
       <div fxLayout="column" fxLayoutAlign="space-around center" *ngIf="selected">
         <div class="status">{{status}}</div>
         <div *ngIf="status=='uploading...'">Uploading {{uploadCount}} of {{records}}</div>
-        <div *ngIf="status=='Done!'">{{uploadCount}} of {{records}} uploaded!</div>
+        <div *ngIf="status=='Done!'">{{uploadCount}}({{successUploadCount}}) of {{records}} uploaded!</div>
       </div>
   
   

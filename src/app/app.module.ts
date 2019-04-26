@@ -25,6 +25,7 @@ import { PapaParseModule } from 'ngx-papaparse';
 import { UploadOperatorsComponent } from './upload/upload-operators/upload-operators.component';
 import { OperatorViewComponent } from './operator/operator-view/operator-view.component';
 import { UploadConversationsComponent } from './upload/upload-conversations/upload-conversations.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -42,7 +43,7 @@ import { UploadConversationsComponent } from './upload/upload-conversations/uplo
     UploadOperatorsComponent,
     OperatorViewComponent,
     UploadConversationsComponent
-  ],
+    ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -53,7 +54,7 @@ import { UploadConversationsComponent } from './upload/upload-conversations/uplo
     FlexLayoutModule,
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule,
     MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginatorModule,
-    Ng2GoogleChartsModule, PapaParseModule
+    Ng2GoogleChartsModule, PapaParseModule, HttpClientModule
     
   ],
   providers: [
