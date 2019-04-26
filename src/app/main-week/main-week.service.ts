@@ -10,11 +10,66 @@ import { map } from 'rxjs/operators';
 })
 export class MainWeekService {
 
-  constructor(private http:HttpClient) { 
+  constructor(private http: HttpClient) {
 
   }
 
-  public insert(record:MainWeek):Observable<any>{
+  public getAll(): Promise<MainWeek[]> {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = "http://localhost:3000/api/main-record";
+      self.http.get(url).toPromise()
+        .then(function (result:MainWeek[]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
+
+  public get(week_start:string):Promise<MainWeek>{
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = "http://localhost:3000/api/main-record/"+week_start;
+      self.http.get(url).toPromise()
+        .then(function (result:MainWeek) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
+
+  public getLast(week_start:string, x:number):Promise<MainWeek>{
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = "http://localhost:3000/api/main-record/last/"+week_start+"/"+x;
+      self.http.get(url).toPromise()
+        .then(function (result:MainWeek) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
+
+  public getStat(column:string, week_start:string, week_end:string):Promise<MainWeek[]>{
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = "http://localhost:3000/api/main-record/"+column+"/"+week_start+"/"+week_end;
+      self.http.get(url).toPromise()
+        .then(function (result:MainWeek[]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
+  public insert(record: MainWeek): Observable<any> {
     var url = "http://localhost:3000/api/main-record";
     var x = this.http.put(url, record);
     return x;

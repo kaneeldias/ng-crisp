@@ -3,6 +3,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { Operator } from '../operator';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { OperatorService } from '../operator.service';
+import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-operator-view',
@@ -11,21 +13,37 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 })
 export class OperatorViewComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'sheet_name', 'type'];
+  displayedColumns: string[] = ['name', 'type', 'country'];
   public operators: Operator[];
   dataSource = new MatTableDataSource(this.operators);
 
   loaded = false;
 
-  constructor(private db: AngularFirestore, private router: Router) {
+  constructor(
+    private db: AngularFirestore,
+    private router: Router,
+    private operatorService: OperatorService,
+    private snackBarService:SnackbarService
+  ) {
     var self = this;
-    Operator.getAllOperators(this.db, function(operators: Operator[]){
+    operatorService.getAll()
+      .then(function (operators) {
+        self.operators = operators;
+        self.dataSource = new MatTableDataSource(self.operators);
+        self.dataSource.sort = self.sort;
+        self.dataSource.paginator = self.paginator;
+      })
+      .catch(function (error) {
+        console.log(error);
+        self.snackBarService.openSnackBar("Internal Server Error. Could not fetch operators.", "OK");
+      })
+    /*Operator.getAllOperators(this.db, function(operators: Operator[]){
         self.operators = operators;
         self.dataSource = new MatTableDataSource(self.operators);
         self.dataSource.sort = self.sort;
         self.dataSource.paginator = self.paginator;
 
-    });
+    });*/
 
   }
 
@@ -43,4 +61,4 @@ export class OperatorViewComponent implements OnInit {
 }
 
 
- 
+

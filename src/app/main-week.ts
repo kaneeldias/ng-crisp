@@ -20,7 +20,10 @@ export class MainWeek{
     people_created:number;
 
     public static getAllRecords(db:AngularFirestore, callback){
-        var records: Observable<MainWeek[]> = db.collection('main-record', 
+
+        
+
+        /*var records: Observable<MainWeek[]> = db.collection('main-record', 
         )
             .snapshotChanges()
             .pipe(map(actions => {
@@ -41,7 +44,7 @@ export class MainWeek{
             records.subscribe(records => {
                 var result = records as MainWeek[];
                 callback(result);
-            })
+            })*/
     }
 
 

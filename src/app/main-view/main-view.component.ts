@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { Router } from '@angular/router';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MainWeekService } from '../main-week/main-week.service';
+import { SnackbarService } from '../snackbar/snackbar.service';
 
 
 
@@ -28,14 +30,30 @@ export class MainViewComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
 
-  constructor(private db: AngularFirestore, private router: Router) {
+  constructor(
+    private db: AngularFirestore,
+    private router: Router,
+    private mainWeekService: MainWeekService,
+    private snackBarService:SnackbarService
+  ) {
     var self = this;
 
-    MainWeek.getAllRecords(db, function(records:MainWeek[]){
+    mainWeekService.getAll()
+      .then(function (records) {
         self.items = records;
         self.dataSource = new MatTableDataSource(self.items);
         self.dataSource.sort = self.sort;
-    });
+      })
+      .catch(function (error) {
+        console.log(error);
+        self.snackBarService.openSnackBar("Internal Server Error. Could not fetch records.", "FUCK");
+      });
+
+    /*MainWeek.getAllRecords(db, function(records:MainWeek[]){
+        self.items = records;
+        self.dataSource = new MatTableDataSource(self.items);
+        self.dataSource.sort = self.sort;
+    });*/
 
     /*var records: Observable<any[]> = this.db.collection('main-record', ref => ref
     )

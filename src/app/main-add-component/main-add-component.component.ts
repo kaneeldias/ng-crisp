@@ -35,79 +35,22 @@ export class MainAddComponentComponent implements OnInit {
     private db: AngularFirestore, private router: Router, private route: ActivatedRoute) {
 
     this.record.week_start = new Date().toISOString().split("T")[0];
-    //this.record.week_start = "2019-04-01";
     console.log(this.record.week_start);
-    /*this.record.conversations_assigned = 0;
-    this.record.helpdesk_reads = 0;
-    this.record.mean_rating = 0;
-    this.record.new_conversations = 0;
-    this.record.people_created = 0;*/
-
   }
 
   public addItem() {
+    var self = this;
     var x = this.mainWeekService.insert(this.record);
     x.toPromise()
       .then(function (response) {
         console.log(response);
+        self.snackBar.openSnackBar("Record inserted", "Yay");
+        self.router.navigate(['/main']);
       })
       .catch(function (error) {
         console.log(error);
-        this.snackBar.openSnackbar("Internal Server Error", "FUCK");
+        self.snackBar.openSnackBar("Internal Server Error. Could not insert record.", "FUCK");
       });
-    /*x.subscribe(data => {
-      console.log(data);
-    })*/
-
-
-    /*var self = this;
-    this.mainRecordsCollection.doc(this.record.week_start).set(JSON.parse(JSON.stringify(this.record)), {merge:true})
-    .then(function(){
-      self.router.navigate(['/main']);
-    });*/
-
-    /*var updateItem = this.updateItem.bind(this);
-    var home = this;
-    this.record.week_start = new Date(this.record.week_start).toISOString().split('T')[0];
-    if(!this.record.validate()){
-      alert("ERROR");
-      return;
-    }
-    /*var updateItem = function(docId:String){
-      updateItem(docId);
-    }
-
-    var existing: Observable<any[]> = this.db.collection<MainWeek>('main-record', ref => ref
-      .where(
-        'week_start', '==', this.record.week_start
-      ))
-      .snapshotChanges()
-      .pipe(map(actions => {
-        return actions.map(a => {
-          const id = a.payload.doc.id;
-          const data = a.payload.doc.data() as MainWeek;
-          return { id, ...data };
-        })
-      }));
-
-    existing.subscribe(existingItems => {
-      if (existingItems.length > 0) {
-        existingItems.forEach(e => {
-          updateItem(e.id);
-        })
-      }
-      else {
-        var router = this.router;
-        this.mainRecordsCollection.doc(this.record.week_start).set(JSON.parse(JSON.stringify(this.record)))
-          .then(function () {
-            router.navigate(['/main']);
-          })
-          .catch(function (e) {
-            alert("Error");
-            console.log(e);
-          });;
-      }
-    });*/
 
   }
 
@@ -124,37 +67,15 @@ export class MainAddComponentComponent implements OnInit {
   }
 
   private getInfo() {
-    var existing: Observable<any[]> = this.db.collection<MainWeek>('main-record', ref => ref
-      .where(
-        'week_start', '==', this.record.week_start
-      ))
-      .snapshotChanges()
-      .pipe(map(actions => {
-        return actions.map(a => {
-          const id = a.payload.doc.id;
-          const data = a.payload.doc.data() as MainWeek;
-          return { id, ...data };
-        })
-      }));
-
-    existing.subscribe(existingItems => {
-      if (existingItems.length > 0) {
-        existingItems.forEach(e => {
-          this.record.week_start = e.week_start;
-          this.record.helpdesk_reads = e.helpdesk_reads;
-          this.record.people_created = e.people_created;
-          this.record.new_conversations = e.new_conversations;
-          this.record.conversations_assigned = e.conversations_assigned;
-          this.record.mean_rating = e.mean_rating;
-
-          console.log
-        })
-      }
-      else {
-        console.log("DNE");
-      }
+    var self = this;
+    this.mainWeekService.get(this.record.week_start)
+    .then(function(record){
+      self.record = record;
+    })
+    .catch(function(error){
+      console.log(error);
+      self.snackBar.openSnackBar("Internal Server Error. Could not fetch record.", "OK");
     });
-
   }
 
   ngOnInit() {

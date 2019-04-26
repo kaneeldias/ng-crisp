@@ -7,6 +7,8 @@ import { GoogleChartInterface } from 'ng2-google-charts/google-charts-interfaces
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
+import { MainWeekService } from 'src/app/main-week/main-week.service';
+import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 
 
 declare var $: any;
@@ -31,8 +33,8 @@ export class PeopleCreatedChartComponent {
       title: 'People Created',
       width: 750,
       height: 400,
-      series:{
-        0: {color:'#26a65b'}
+      series: {
+        0: { color: '#26a65b' }
       },
       chartArea: {
         width: '85%',
@@ -58,38 +60,25 @@ export class PeopleCreatedChartComponent {
 
   public loaded = false;
 
-  constructor(private db: AngularFirestore) {
+  constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBar: SnackbarService) {
 
   }
 
   ngOnInit() {
-    var records: Observable<any[]> = this.db.collection('main-record', ref => ref
-      .where('week_start', '>=', this.start)
-      .where('week_start', '<=', this.end)
-      .orderBy('week_start', 'desc')
-    )
-      .snapshotChanges()
-      .pipe(map(actions => {
-        return actions.map(a => {
-          const id = a.payload.doc.id;
-          const data = a.payload.doc.data();
-          return { id, ...data };
+    var self = this;
+    this.mainWeekService.getStat('people_created', this.start, this.end)
+      .then(function (records) {
+        records.forEach(record => {
+          var array = [record.week_start, record.people_created];
+          self.peopleCreatedChart.dataTable.push(array);
+          self.loaded = true;
+          console.log(self.peopleCreatedChart);
         })
-      }));
-
-    var sub = records.subscribe(records => {
-      records.forEach(record => {
-        var array = [record.week_start, record.people_created];
-        this.peopleCreatedChart.dataTable.splice(1, 0, array);
-
       })
-      this.loaded = true;
-      console.log(this.peopleCreatedChart);
-      sub.unsubscribe();
-    })
-
-
+      .catch(function (error) {
+        console.log(error);
+        self.snackBar.openSnackBar("Internal Server Error. Could not load helpdesk reads graph.", "OK");
+      })
   }
-
 
 }
