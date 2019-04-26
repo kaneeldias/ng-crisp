@@ -18,9 +18,12 @@ export class UploadConversationsComponent implements OnInit {
 
   private data;
   private collection: AngularFirestoreCollection;
+  private records_collection: AngularFirestoreCollection;
+
 
   constructor(private db: AngularFirestore) {
     this.collection = db.collection('conversations');
+    this.records_collection = db.collection('main-records');
   }
 
   ngOnInit() {
@@ -97,6 +100,7 @@ export class UploadConversationsComponent implements OnInit {
 
       this.collection.doc(record[0]).set(doc, {'merge':true})
         .then(function () {
+          this.
           self.successUploadCount++;
           self.uploadCount++;
           self.store(i + 1, finishedCallback);
