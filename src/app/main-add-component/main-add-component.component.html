@@ -1,0 +1,63 @@
+<div fxLayout="column">
+
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <mat-card fxLayout="column" fxFlex="33">
+
+      <mat-card-title>{{type}} Record</mat-card-title>
+      <mat-card-subtitle>{{subtitle}}</mat-card-subtitle>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Week Start</mat-label>
+        <input matInput [(ngModel)]="record.week_start" name="week_start" type="text" [disabled]="type == 'Edit'">
+        <mat-icon matSuffix>date_range</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Helpdesk Reads</mat-label>
+        <input type="number" matInput [(ngModel)]="record.helpdesk_reads" name="helpdesk_reads">
+        <mat-icon matSuffix>library_books</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>People Created</mat-label>
+        <input type="number" matInput [(ngModel)]="record.people_created" name="people_created">
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>New Conversations</mat-label>
+        <input type="number" matInput [(ngModel)]="record.new_conversations" name="new_conversations">
+        <mat-icon matSuffix>message</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Conversations Assigned</mat-label>
+        <input type="number" matInput [(ngModel)]="record.conversations_assigned" name="conversations_assigned">
+        <mat-icon matSuffix>forum</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Mean Rating</mat-label>
+        <input type="number" matInput [(ngModel)]="record.mean_rating" name="mean_rating">
+        <mat-icon matSuffix>star</mat-icon>
+      </mat-form-field>
+
+
+
+      <button mat-stroked-button color="primary" (click)="addItem()">Submit</button>
+
+    </mat-card>
+  </div>
+
+
+  <!--<app-main-view></app-main-view>
+    
+    <ul>
+        <li class="text" *ngFor="let item of items | async">
+          {{item.week_start}} : {{item.helpdesk_reads}}
+        </li>
+      </ul>
+    
+    {{record.week_start}}-->
+
+</div>
