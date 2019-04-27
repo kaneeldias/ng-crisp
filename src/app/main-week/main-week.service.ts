@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { MainWeek } from '../main-week';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import {API} from '../config';
 
 
 @Injectable({
@@ -17,7 +18,7 @@ export class MainWeekService {
   public getAll(): Promise<MainWeek[]> {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var url = "http://localhost:3000/api/main-record";
+      var url = API.getUrl('main-record');
       self.http.get(url).toPromise()
         .then(function (result:MainWeek[]) {
             resolve(result);
@@ -31,7 +32,7 @@ export class MainWeekService {
   public get(week_start:string):Promise<MainWeek>{
     var self = this;
     return new Promise(function (resolve, reject) {
-      var url = "http://localhost:3000/api/main-record/"+week_start;
+      var url =  API.getUrl('main-record/' +  week_start);
       self.http.get(url).toPromise()
         .then(function (result:MainWeek) {
             resolve(result);
@@ -45,7 +46,7 @@ export class MainWeekService {
   public getLast(week_start:string, x:number):Promise<MainWeek>{
     var self = this;
     return new Promise(function (resolve, reject) {
-      var url = "http://localhost:3000/api/main-record/last/"+week_start+"/"+x;
+      var url =  API.getUrl('main-record/last/'+ week_start + "/" + x);
       self.http.get(url).toPromise()
         .then(function (result:MainWeek) {
             resolve(result);
@@ -59,7 +60,7 @@ export class MainWeekService {
   public getStat(column:string, week_start:string, week_end:string):Promise<MainWeek[]>{
     var self = this;
     return new Promise(function (resolve, reject) {
-      var url = "http://localhost:3000/api/main-record/"+column+"/"+week_start+"/"+week_end;
+      var url =  API.getUrl('main-record/'+ column + "/" + week_start + "/" + week_end);
       self.http.get(url).toPromise()
         .then(function (result:MainWeek[]) {
             resolve(result);
@@ -70,7 +71,7 @@ export class MainWeekService {
     });
   }
   public insert(record: MainWeek): Observable<any> {
-    var url = "http://localhost:3000/api/main-record";
+    var url =  API.getUrl('main-record');
     var x = this.http.put(url, record);
     return x;
   }

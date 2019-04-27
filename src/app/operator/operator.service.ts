@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Operator } from './operator';
+import {API} from '../config';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class OperatorService {
   public getAll():Promise<Operator[]>{
     var self = this;
     return new Promise(function (resolve, reject) {
-      var url = "http://localhost:3000/api/operator";
+      var url = API.getUrl('operator');
       self.http.get(url).toPromise()
         .then(function (result:Operator[]) {
             resolve(result);
