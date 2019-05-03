@@ -21,15 +21,22 @@
                 <td mat-cell *matCellDef="let e"> {{e.name}} </td>
               </ng-container>
       
-              <ng-container matColumnDef="country">
-                <th mat-header-cell *matHeaderCellDef>Country</th>
-                <td mat-cell *matCellDef="let e"> {{e.country}} </td>
+              <ng-container matColumnDef="assigned">
+                <th mat-header-cell *matHeaderCellDef>Assigned</th>
+                <td mat-cell *matCellDef="let e"> {{e.assigned.join(", ")}} </td>
               </ng-container>
       
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
                 <td mat-cell *matCellDef="let e"> {{e.type}} </td>
               </ng-container>
+
+              <ng-container matColumnDef="assign_edit">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+                  <td mat-cell *matCellDef="let e">
+                    <mat-icon (click)='editDialog(e)'>edit</mat-icon>
+                  </td>
+                </ng-container>
       
               <!--<ng-container matColumnDef="edit">
                 <th mat-header-cell *matHeaderCellDef></th>

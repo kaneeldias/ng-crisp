@@ -8,7 +8,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule, MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginator, MatPaginatorModule, MatSnackBarModule} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule, MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginator, MatPaginatorModule, MatSnackBarModule, MatTabsModule, MatProgressSpinnerModule, MatSidenavModule, MatNavList, MatListModule} from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { MainAddComponentComponent } from './main-add-component/main-add-component.component';
@@ -24,6 +24,23 @@ import { UploadOperatorsComponent } from './upload/upload-operators/upload-opera
 import { OperatorViewComponent } from './operator/operator-view/operator-view.component';
 import { UploadConversationsComponent } from './upload/upload-conversations/upload-conversations.component';
 import { HttpClientModule } from '@angular/common/http';
+import { NewConversationsChartComponent } from './charts/new-conversations-chart/new-conversations-chart.component';
+import { ConversationsAssignedBreakdownChartComponent } from './charts/conversations-assigned-breakdown-chart/conversations-assigned-breakdown-chart.component';
+import { ConversationsCreatedByCountryTableComponent } from './tables/conversations-created-by-country-table/conversations-created-by-country-table.component';
+import { ConversationsCreatedByCountryChartComponent } from './charts/conversations-created-by-country-chart/conversations-created-by-country-chart.component';
+import { ChartComponent } from './charts/chart-component';
+import { ActiveConversationsChartComponent } from './charts/active-conversations-chart/active-conversations-chart.component';
+import { ConversationsActiveAnsweredByCountryChartComponent } from './charts/conversations-active-answered-by-country-chart/conversations-active-answered-by-country-chart.component';
+import { OverallDashboardComponentComponent } from './dashboard/overall-dashboard-component/overall-dashboard-component.component';
+import { ActiveAnsweredConversationsChartComponent } from './charts/active-answered-conversations-chart/active-answered-conversations-chart.component';
+import { AnsweredConversationsByOperatorTypeComponent } from './charts/answered-conversations-by-operator-type/answered-conversations-by-operator-type.component';
+import { OperatorStatsTableComponent } from './tables/operator-stats-table/operator-stats-table.component';
+import { GstDashboardComponent } from './dashboard/gst-dashboard/gst-dashboard.component';
+import { OperatorConversationsAnsweredChartComponent } from './charts/operator-conversations-answered-chart/operator-conversations-answered-chart.component';
+import { EntityDashboardComponent } from './dashboard/entity-dashboard/entity-dashboard.component';
+import { OperatorConversationsAnsweredPieChartComponent } from './charts/operator-conversations-answered-pie-chart/operator-conversations-answered-pie-chart.component';
+import { EditAssignedCountriesDialogComponent } from './dialogs/edit-assigned-countries-dialog/edit-assigned-countries-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 
@@ -40,7 +57,22 @@ import { HttpClientModule } from '@angular/common/http';
     UploadMessagesComponent,
     UploadOperatorsComponent,
     OperatorViewComponent,
-    UploadConversationsComponent
+    UploadConversationsComponent,
+    NewConversationsChartComponent,
+    ConversationsAssignedBreakdownChartComponent,
+    ConversationsCreatedByCountryTableComponent,
+    ConversationsCreatedByCountryChartComponent,
+    ActiveConversationsChartComponent,
+    ConversationsActiveAnsweredByCountryChartComponent,
+    OverallDashboardComponentComponent,
+    ActiveAnsweredConversationsChartComponent,
+    AnsweredConversationsByOperatorTypeComponent,
+    OperatorStatsTableComponent,
+    GstDashboardComponent,
+    OperatorConversationsAnsweredChartComponent,
+    EntityDashboardComponent,
+    OperatorConversationsAnsweredPieChartComponent,
+    EditAssignedCountriesDialogComponent,
     ],
   imports: [
     BrowserModule,
@@ -51,13 +83,15 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserAnimationsModule,
     FlexLayoutModule,
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule,
-    MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginatorModule, MatSnackBarModule,
+    MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginatorModule, MatSnackBarModule, MatTabsModule,
+    MatProgressSpinnerModule, MatSidenavModule, MatListModule, MatDialogModule,
     Ng2GoogleChartsModule, PapaParseModule, HttpClientModule
     
   ],
   providers: [
     MatDatepickerModule
   ],
+  entryComponents: [EditAssignedCountriesDialogComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -23,4 +23,32 @@ export class OperatorService {
         })
     });
   }
+
+  public getOfType(type){
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = API.getUrl('operator/get-of-type/' + type);
+      self.http.get(url).toPromise()
+        .then(function (result:Operator[]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
+
+  public setAssigned(id, assigned){
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = API.getUrl('operator/set-assigned/');
+      self.http.post(url, {id:id, assigned:assigned}).toPromise()
+        .then(function (result:Operator[]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
 }

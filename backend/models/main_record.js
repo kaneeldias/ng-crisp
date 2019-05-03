@@ -107,7 +107,7 @@ module.exports = class MainRecord {
 
     static getStat(column, week_start, week_end) {
         var self = this;
-        var columns = ['helpdesk_reads', 'people_created', 'mean_rating'];
+        var columns = ['helpdesk_reads', 'people_created', 'mean_rating', 'new_conversations'];
         return new Promise(function (resolve, reject) {
             if(columns.indexOf(column) == -1){
                 reject("dude wtf");

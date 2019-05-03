@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { MainWeekService } from 'src/app/main-week/main-week.service';
 import { SnackbarService } from 'src/app/snackbar/snackbar.service';
+import { ChartComponent } from '../chart-component';
 
 
 declare var $: any;
@@ -16,29 +17,29 @@ declare var google: any;
 
 @Component({
   selector: 'app-helpdesk-reads-chart',
-  templateUrl: './helpdesk-reads-chart.component.html',
+  templateUrl: '../chart-template.html',
   styleUrls: ['./helpdesk-reads-chart.component.css']
 })
-export class HelpdeskReadsChartComponent {
+export class HelpdeskReadsChartComponent extends ChartComponent{
 
   @Input() start: string = "2019-03-04";
   @Input() end: string = new Date().toISOString().split("T")[0];
 
-  public helpdeskReadsChart: GoogleChartInterface = {
+  public chartData: GoogleChartInterface = {
     chartType: 'LineChart',
     dataTable: [
       ['Week Start', '# of Reads']
     ],
     options: {
       title: 'Helpdesk Article Reads',
-      width: 750,
-      height: 400,
+      width: this.width,
+      height: this.height,
       timeline: {
         groupByRowLabel: true
       },
       chartArea: {
-        width: '85%',
-        left: 70
+        width: this.width - 50,
+        left: this.width/10
       },
       legend: 'none',
       hAxis: {
@@ -48,8 +49,8 @@ export class HelpdeskReadsChartComponent {
           count: -1
         }
       },
-      lineWidth: 3,
-      pointSize: 7,
+      lineWidth: this.width/200,
+      pointSize: this.width/100,
       animation: {
         duration: 2000,
         easing: "out",
@@ -60,21 +61,21 @@ export class HelpdeskReadsChartComponent {
 
   public loaded = false;
 
-  constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBar: SnackbarService) {
-
+  constructor(private mainWeekService: MainWeekService, private snackBar: SnackbarService) {
+    super();
   }
 
   ngOnInit() {
-
+    super.setParams();
     var self = this;
     this.mainWeekService.getStat('helpdesk_reads', this.start, this.end)
       .then(function (records) {
         records.forEach(record => {
           var array = [record.week_start, record.helpdesk_reads];
-          self.helpdeskReadsChart.dataTable.push(array);
-          self.loaded = true;
-          console.log(self.helpdeskReadsChart);
+          self.chartData.dataTable.push(array);
         })
+        self.loaded = true;
+        console.log(self.chartData);
       })
       .catch(function (error) {
         console.log(error);

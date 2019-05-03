@@ -1,0 +1,6 @@
+<google-chart *ngIf="loaded" [data]="chartData"></google-chart>
+
+<div *ngIf="!loaded" fxLayout="row" fxLayoutAlign="center center" [style.width.px]="width" [style.height.px]="height"
+    [style.backgroundColor]='red'>
+    <mat-spinner></mat-spinner>
+</div>

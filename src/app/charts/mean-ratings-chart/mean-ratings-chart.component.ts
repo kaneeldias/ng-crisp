@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { MainWeekService } from 'src/app/main-week/main-week.service';
 import { SnackbarService } from 'src/app/snackbar/snackbar.service';
+import { ChartComponent } from '../chart-component';
 
 
 declare var $: any;
@@ -16,15 +17,15 @@ declare var google: any;
 
 @Component({
   selector: 'app-mean-ratings-chart',
-  templateUrl: './mean-ratings-chart.component.html',
+  templateUrl: '../chart-template.html',
   styleUrls: ['./mean-ratings-chart.component.css']
 })
-export class MeanRatingsChartComponent {
+export class MeanRatingsChartComponent extends ChartComponent {
 
   @Input() start: string = "2019-03-04";
   @Input() end: string = new Date().toISOString().split("T")[0];
 
-  public meanRatingsChart: GoogleChartInterface = {
+  public chartData: GoogleChartInterface = {
     chartType: 'LineChart',
     dataTable: [
       ['Week Start', 'Mean Rating']
@@ -61,18 +62,19 @@ export class MeanRatingsChartComponent {
   public loaded = false;
 
   constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBar: SnackbarService) {
-
+    super();
   }
 
   ngOnInit() {
+    super.setParams();
     var self = this;
     this.mainWeekService.getStat('mean_rating', this.start, this.end)
       .then(function (records) {
         records.forEach(record => {
           var array = [record.week_start, record.mean_rating];
-          self.meanRatingsChart.dataTable.push(array);
+          self.chartData.dataTable.push(array);
           self.loaded = true;
-          console.log(self.meanRatingsChart);
+          console.log(self.chartData);
         })
       })
       .catch(function (error) {

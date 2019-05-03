@@ -1,66 +1,30 @@
-<mat-card fxLayout="row wrap" fxLayoutAlign="space-around center" *ngIf="loaded" style="background-color:white">
-    <mat-card-title fxFlex=100>Report for week starting {{report.end}}</mat-card-title>
-    <div fxLayout="row" fxFlex=100 fxLayoutGap="40px">
-        <div class="info_box" fxLayout="column">
-            <div class="info_box title">Helpdesk Reads</div>
-            <div class="info_box val">
-                {{stats.helpdesk_reads}}
-                <mat-icon matSuffix style="color:green" *ngIf="changes.helpdesk_reads > 0">trending_up</mat-icon>
-                <mat-icon matSuffix style="color:red" *ngIf="changes.helpdesk_reads < 0">trending_down</mat-icon>
-            </div>
-        </div>
-        <div class="info_box" fxLayout="column">
-            <div class="info_box title">People Created</div>
-            <div class="info_box val">
-                {{stats.people_created}}
-                <mat-icon matSuffix style="color:green" *ngIf="changes.people_created > 0">trending_up</mat-icon>
-                <mat-icon matSuffix style="color:red" *ngIf="changes.people_created < 0">trending_down</mat-icon>
-            </div>
-        </div>
-        <div class="info_box" fxLayout="column">
-            <div class="info_box title">New Conversations</div>
-            <div class="info_box val">
-                {{stats.new_conversations}}
-                <mat-icon matSuffix style="color:green" *ngIf="changes.new_conversations > 0">trending_up</mat-icon>
-                <mat-icon matSuffix style="color:red" *ngIf="changes.new_conversations < 0">trending_down</mat-icon>
-            </div>
-        </div>
-        <div class="info_box" fxLayout="column">
-            <div class="info_box title">Conversations Assigned</div>
-            <div class="info_box val">
-                {{stats.conversations_assigned}}
-                <mat-icon matSuffix style="color:green" *ngIf="changes.conversations_assigned > 0">trending_up</mat-icon>
-                <mat-icon matSuffix style="color:red" *ngIf="changes.conversations_assigned < 0">trending_down</mat-icon>
-            </div>
-        </div>
-        <div class="info_box" fxLayout="column">
-            <div class="info_box title">Mean Rating</div>
-            <div class="info_box val">
-                {{stats.mean_rating}}
-                <mat-icon matSuffix style="color:green" *ngIf="changes.mean_rating > 0">trending_up</mat-icon>
-                <mat-icon matSuffix style="color:red" *ngIf="changes.mean_rating < 0">trending_down</mat-icon>
-            </div>
-        </div>
-
-    </div>
-    <app-helpdesk-reads-chart [start]="report.start" [end]="report.end" fxFlex=50></app-helpdesk-reads-chart>
-    <app-people-created-chart [start]="report.start" [end]="report.end" fxFlex=50></app-people-created-chart>
-    <app-mean-ratings-chart [start]="report.start" [end]="report.end" fxFlex=50></app-mean-ratings-chart>
-</mat-card>
-
 <style>
-    .info_box .title {
-        color: rgba(0, 0, 0, 0.54);
-        font-size: 12px;
-        font-weight: 500;
-    }
-
-    .info_box .val {
-        color: rgba(0, 0, 0, 0.87);
-        font-size: 14px;
-    }
-
-    .info_box .val mat-icon{
-        font-size: 14px;
+    .mat-tab-group {
+        min-height:590px;
+        overflow-y:hidden;
     }
 </style>
+
+<mat-card fxLayout="row wrap" fxLayoutAlign="stretch center" *ngIf="loaded" style="background-color:white;">
+    <mat-card-title fxFlex=100>Report from {{report.week}} to {{report.week_end}}</mat-card-title>
+    <mat-tab-group animationDuration="500ms" (selectedIndexChange)="tabChange($event)">
+        
+        <mat-tab label="Hello"></mat-tab>
+
+        <mat-tab label="Overall Dashboard">
+            <app-overall-dashboard-component *ngIf="tabs.overall" [report]="report"  style="overflow:hidden"></app-overall-dashboard-component>
+        </mat-tab>
+
+        <mat-tab label="GST Dashboard">
+
+                <app-gst-dashboard *ngIf="tabs.gst" [report]="report"  style="overflow:hidden"></app-gst-dashboard>
+
+        </mat-tab>
+        <mat-tab label="Entity Dashboard">                
+            <app-entity-dashboard *ngIf="tabs.entity" [report]="report"  style="overflow:hidden"></app-entity-dashboard>
+        </mat-tab>
+    </mat-tab-group>
+
+
+</mat-card>
+

@@ -5,6 +5,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MainWeek } from '../main-week';
 import { MainWeekService } from '../main-week/main-week.service';
 import { SnackbarService } from '../snackbar/snackbar.service';
+import { ConversationService } from '../conversation/conversation.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,56 +15,64 @@ import { SnackbarService } from '../snackbar/snackbar.service';
 export class DashboardComponent implements OnInit {
 
   public report = {
+    week: "",
+    week_end: "",
+    prev_week: "",
     start: "2019-03-04",
     end: "2019-04-15"
   };
 
-  stats: MainWeek;
-  changes = {
-    helpdesk_reads: 1,
-    people_created: 1,
-    new_conversations: 1,
-    conversations_assigned: 1,
-    mean_rating: 1
-  };
+  public tabs = {
+    overall:false,
+    gst:false,
+    entity:false
+  }
 
   public loaded = false;
 
-  constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBarService: SnackbarService) { }
+  constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBarService: SnackbarService,
+    private conversationService:ConversationService) { }
 
   ngOnInit() {
 
-    /*this.report.end = "2019-04-15";
-    this.report.start = "2019-04-01";
-    this.loaded = true;*/
-    this.report.start = new Date().toISOString().split("T")[0];
-
     var self = this;
-    this.mainWeekService.getLast(this.report.start, 2)
+    this.report.week = new Date().toISOString().split("T")[0];
+    this.mainWeekService.getLast(this.report.week, 1)
       .then(function (records) {
-        console.log(records);
-        self.report.end = records[0].week_start;
+        self.report.week = records[0].week_start;
+        self.report.end = self.report.week;
+        self.report.start = new Date().toISOString().split("T")[0];
         var start = new Date(self.report.end);
         start.setDate(start.getDate() - 28);
         self.report.start = start.toISOString().split("T")[0];
-        self.stats = records[0];
-        if (records[0].helpdesk_reads - records[1].helpdesk_reads < 0) self.changes.helpdesk_reads = -1;
-        if (records[0].people_created - records[1].people_created < 0) self.changes.people_created = -1;
-        if (records[0].new_conversations - records[1].new_conversations < 0) self.changes.new_conversations = -1;
-        if (records[0].conversations_assigned - records[1].conversations_assigned < 0) self.changes.conversations_assigned = -1;
-        if (records[0].mean_rating - records[1].mean_rating < 0) self.changes.mean_rating = -1;
 
-        //this.report.end = "2019-04-21";
-        //this.report.start = "2019-04-01";
+        var week_end = new Date(self.report.week);
+        week_end.setDate(week_end.getDate() + 6);
+        self.report.week_end = week_end.toISOString().split("T")[0];
 
-        //console.log(this.report.end);
-        //console.log(this.report.start);
+
+        var d = new Date(self.report.week);
+        self.report.prev_week = new Date(d.setDate(d.getDate()-7)).toISOString().split("T")[0];
+        console.log(self.report);
         self.loaded = true;
       })
       .catch(function (error) {
         console.log(error);
-        self.snackBarService.openSnackBar("Internal Server Error. Could not fetch data.", "OK");
+        self.snackBarService.openSnackBar("Internal Server Error. Could not fetch date data.", "OK");
       });
+
+  }
+
+  tabChange(index: number){
+    if(index === 1){
+      this.tabs.overall = true;
+    }
+    if(index === 2){
+      this.tabs.gst = true;
+    }
+    if(index === 3){
+      this.tabs.entity = true;
+    }
   }
 
 }

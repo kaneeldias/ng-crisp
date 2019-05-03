@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { MainWeekService } from 'src/app/main-week/main-week.service';
 import { SnackbarService } from 'src/app/snackbar/snackbar.service';
+import { ChartComponent } from '../chart-component';
 
 
 declare var $: any;
@@ -16,15 +17,15 @@ declare var google: any;
 
 @Component({
   selector: 'app-people-created-chart',
-  templateUrl: './people-created-chart.component.html',
+  templateUrl: '../chart-template.html',
   styleUrls: ['./people-created-chart.component.css']
 })
-export class PeopleCreatedChartComponent {
+export class PeopleCreatedChartComponent extends ChartComponent {
 
   @Input() start: string = "2019-03-04";
   @Input() end: string = new Date().toISOString().split("T")[0];
 
-  public peopleCreatedChart: GoogleChartInterface = {
+  public chartData: GoogleChartInterface = {
     chartType: 'LineChart',
     dataTable: [
       ['Week Start', '# of People Created']
@@ -61,18 +62,19 @@ export class PeopleCreatedChartComponent {
   public loaded = false;
 
   constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBar: SnackbarService) {
-
+    super();
   }
 
   ngOnInit() {
+    super.setParams();
     var self = this;
     this.mainWeekService.getStat('people_created', this.start, this.end)
       .then(function (records) {
         records.forEach(record => {
           var array = [record.week_start, record.people_created];
-          self.peopleCreatedChart.dataTable.push(array);
+          self.chartData.dataTable.push(array);
           self.loaded = true;
-          console.log(self.peopleCreatedChart);
+          console.log(self.chartData);
         })
       })
       .catch(function (error) {
