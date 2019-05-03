@@ -3,8 +3,6 @@ import { OperatorService } from 'src/app/operator/operator.service';
 import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 import { ConversationService } from 'src/app/conversation/conversation.service';
 import { log } from 'util';
-import { Stats } from 'fs';
-import { Stats } from 'fs';
 
 @Component({
   selector: 'app-gst-dashboard',
@@ -21,12 +19,12 @@ export class GstDashboardComponent implements OnInit {
 
   stats = {
     conversations_answered:0,
-    conversation_active:0,
+    conversations_active:0,
     answered_percentage:0
   };
   changes = {
     conversations_answered:1,
-    conversation_active:1,
+    conversations_active:1,
     answered_percentage:1
   };
 
@@ -54,7 +52,7 @@ export class GstDashboardComponent implements OnInit {
     this.loaded = true;
   }
 
-  async private loadData(){
+  async loadData(){
     var self = this;
     var options = {
       filter:this.gst
@@ -90,7 +88,7 @@ export class GstDashboardComponent implements OnInit {
       self.changes.answered_percentage = -1;
     }
 
-    self.stats.answered_percentage = Math.round((self.stats.conversations_answered / self.stats.conversations_active) * 10000, 2)/100 + "%";
+    self.stats.answered_percentage = Math.round((self.stats.conversations_answered / self.stats.conversations_active) * 10000)/100;
   }
 
 }

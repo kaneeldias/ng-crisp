@@ -258,7 +258,7 @@ export class EditAssignedCountriesDialogComponent {
   { "name": "Zimbabwe", "code": "ZW" }
 ]
   displayedColumns: string[] = ['select', 'name', 'code'];
-  dataSource = new MatTableDataSource<PeriodicElement>(this.country_map);
+  dataSource = new MatTableDataSource<{}>(this.country_map);
   selected = {};
 
   constructor(

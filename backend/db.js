@@ -1,8 +1,8 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
+  host: '35.232.163.18',
+  user: 'kaneeldias',
+  password: 'bbcdogs@123',
   database: 'crisp'
 });
 const {log} = require('./log');
