@@ -1,4 +1,4 @@
-const url = "http://localhost:3000/api";
+const url = "http://localhost:3000/apis";
 
 export class API{
 
