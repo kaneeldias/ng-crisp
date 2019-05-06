@@ -51,4 +51,18 @@ export class OperatorService {
         })
     });
   }
+
+  public getAssigned(name){
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = API.getUrl('operator/assigned/' + name);
+      self.http.get(url).toPromise()
+        .then(function (result:[]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
 }

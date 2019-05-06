@@ -67,11 +67,11 @@ export class ConversationService {
     });
   }
 
-  public getActiveByCountry(start:string, end:string):Promise<[{}]>{
+  public getActiveByCountry(start:string, end:string, options:{} = {}):Promise<[{}]>{
     var self = this;
     return new Promise(function (resolve, reject) {
       var url = API.getUrl('conversation/active-by-country/'+start+'/'+end);
-      self.http.get(url).toPromise()
+      self.http.post(url, {options:options}).toPromise()
         .then(function (result:[{}]) {
             resolve(result);
         })
@@ -81,11 +81,11 @@ export class ConversationService {
     });
   }
 
-  public getAnsweredByCountry(start:string, end:string):Promise<[{}]>{
+  public getAnsweredByCountry(start:string, end:string, options:{} = {}):Promise<[{}]>{
     var self = this;
     return new Promise(function (resolve, reject) {
       var url = API.getUrl('conversation/answered-by-country/'+start+'/'+end);
-      self.http.get(url).toPromise()
+      self.http.post(url, {options:options}).toPromise()
         .then(function (result:[{}]) {
             resolve(result);
         })
@@ -100,6 +100,20 @@ export class ConversationService {
     return new Promise(function (resolve, reject) {
       var url = API.getUrl('conversation/answered-by-operator-type/'+start+'/'+end);
       self.http.get(url).toPromise()
+        .then(function (result:[{}]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
+
+  public getActiveByOperator(start:string, end:string, options:{}):Promise<[{}]>{
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = API.getUrl('conversation/active-by-operator/'+start+'/'+end);
+      self.http.post(url, {options:options}).toPromise()
         .then(function (result:[{}]) {
             resolve(result);
         })

@@ -9,7 +9,9 @@
     <mat-card-title fxFlex=100>Report from {{report.week}} to {{report.week_end}}</mat-card-title>
     <mat-tab-group animationDuration="500ms" (selectedIndexChange)="tabChange($event)">
         
-        <mat-tab label="Hello"></mat-tab>
+        <mat-tab label="Hello">
+    
+        </mat-tab>
 
         <mat-tab label="Overall Dashboard">
             <app-overall-dashboard-component *ngIf="tabs.overall" [report]="report"  style="overflow:hidden"></app-overall-dashboard-component>

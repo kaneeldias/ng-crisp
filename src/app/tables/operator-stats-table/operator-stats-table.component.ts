@@ -14,12 +14,12 @@ export class OperatorStatsTableComponent implements OnInit {
 
   @Input() start: string;
   @Input() end: string;
-  @Input() perPage:number = 10;
+  @Input() perPage: number = 10;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   @Input() public filter = ['Belgium', 'Bangladesh'];
-  displayedColumns: string[] = ['name', 'conversations_answered'];
+  displayedColumns: string[] = ['name', 'active', 'conversations_answered'];
   public records = [];
   dataSource = new MatTableDataSource(this.records);
 
@@ -40,14 +40,23 @@ export class OperatorStatsTableComponent implements OnInit {
     var options = {
       filter: this.filter
     }
+
+    var mid = {};
     var p1 = this.conversationService.getAnsweredByOperator(this.start, this.end, options)
       .then(function (results) {
         results.forEach(function (g: any) {
+          if (mid[g.name] == undefined) {
+            mid[g.name] = {
+              name: g.name,
+              active_conversations: 0,
+              conversations_answered: 0
+            }
+          }
           var obj = {
             name: g.name,
             conversations_answered: g.count
           }
-          self.records.push(obj);
+          mid[g.name].conversations_answered = g.count;
         })
 
       })
@@ -56,7 +65,40 @@ export class OperatorStatsTableComponent implements OnInit {
         self.snackBarService.openSnackBar("Internal Server Error. Could not fetch data.", "OK");
       })
 
-    await p1;
+
+    var p2 = this.conversationService.getActiveByOperator(this.start, this.end, options)
+      .then(function (results) {
+        results.forEach(function (g: any) {
+          if (mid[g.name] == undefined) {
+            mid[g.name] = {
+              name: g.name,
+              active_conversations: 0,
+              conversations_answered: 0
+            }
+          }
+          var obj = {
+            name: g.name,
+            conversations_answered: g.count
+          }
+          mid[g.name].active_conversations = g.count;
+        })
+
+      })
+      .catch(function (error) {
+        console.log(error);
+        self.snackBarService.openSnackBar("Internal Server Error. Could not fetch data.", "OK");
+      })
+
+    await p1; await p2;
+    for(var name in mid){
+      var r = {
+        name:name,
+        active_conversations:mid[name].active_conversations,
+        conversations_answered:mid[name].conversations_answered
+      }
+      self.records.push(r);
+    }
+
     self.dataSource = new MatTableDataSource(self.records);
     self.dataSource.sort = self.sort;
     self.dataSource.paginator = self.paginator;

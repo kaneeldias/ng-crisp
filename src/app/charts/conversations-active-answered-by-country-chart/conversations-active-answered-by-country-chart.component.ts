@@ -13,8 +13,8 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
 
   @Input() start: string = "2019-03-04";
   @Input() end: string = new Date().toISOString().split("T")[0];
-
-  @Input() show:1000;
+  @Input() filter: [];
+  @Input() show: 1000;
 
   public chartData: GoogleChartInterface = {
     chartType: 'ColumnChart',
@@ -22,14 +22,14 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
       ['Country', 'Answered Conversations', 'Unanswered Conversations']
     ],
     options: {
-      isStacked:true,
+      isStacked: true,
       title: 'Conversations by Country',
       width: 750,
       height: 400,
       series: {
-        0: { color: '#26a65b', targetAxisIndex:0 },
-        1: { color: '#abb7b7', targetAxisIndex:0},
-        2: { color: '#d91e18', targetAxisIndex:1, type:'line' }
+        0: { color: '#26a65b', targetAxisIndex: 0 },
+        1: { color: '#abb7b7', targetAxisIndex: 0 },
+        2: { color: '#d91e18', targetAxisIndex: 1, type: 'line' }
 
       },
       chartArea: {
@@ -68,10 +68,15 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
   async ngOnInit() {
     super.setParams();
     var self = this;
-    var options:any = this.chartData.options;
+    this.mid = {};
+    var options: any = this.chartData.options;
     options.chartArea.width = this.width - 100;
 
-    var p1 = this.conversationService.getActiveByCountry(this.start, this.end)
+    var optionsX = {
+      filter: this.filter
+    }
+
+    var p1 = this.conversationService.getActiveByCountry(this.start, this.end, optionsX)
       .then(function (records: any) {
         records.forEach(function (r) {
           if (self.mid[r.country] == undefined) self.mid[r.country] = [0, 0];
@@ -83,11 +88,12 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
         self.snackBarService.openSnackBar("Internal Server Error. Could not fetch country active conversations data.", "OK");
       })
 
-    var p2 = this.conversationService.getAnsweredByCountry(this.start, this.end)
+    await p1;
+    var p2 = this.conversationService.getAnsweredByCountry(this.start, this.end, optionsX)
       .then(function (records: any) {
         records.forEach(function (r) {
           if (self.mid[r.country] == undefined) self.mid[r.country] = [0, 0];
-          self.mid[r.country][1] = r.count;
+          else self.mid[r.country][1] = r.count;
         })
       })
       .catch(function (error) {
@@ -97,29 +103,30 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
 
     await p1;
     await p2;
-    
-    try{
+
+    try {
       var records = [];
       for (var country in this.mid) {
         var active_convos = this.mid[country][0];
         var answered_convos = this.mid[country][1];
         var percentage = 0;
         if (active_convos != 0) percentage = answered_convos / active_convos;
-  
+
         var obj = {
           country: country,
           active_conversations: active_convos,
           answered_conversations: answered_convos,
-          answered_percentage:percentage
+          answered_percentage: percentage
         }
         records.push(obj);
       }
-  
+
       records.sort(function (a, b) {
         return a.active_conversations == b.active_conversations ? 0 : +(a.active_conversations < b.active_conversations) || -1;
       });
-  
+
       var i = 0;
+      this.chartData.dataTable = [ ['Country', 'Answered Conversations', 'Unanswered Conversations']];
       records.forEach(record => {
         if (record.country != "Unknown") {
           var array = [record.country, record.answered_conversations, record.active_conversations - record.answered_conversations];
@@ -130,11 +137,17 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
       self.loaded = true;
       console.log(self.chartData);
     }
-    catch(error){
+    catch (error) {
       console.log(error);
       self.snackBarService.openSnackBar("Error loading active & answered conversations by country graph", "OK");
     }
-   
+
+  }
+
+  ngOnChanges() {
+    if(this.loaded == false) return;
+    this.loaded = false;
+    this.ngOnInit();
   }
 
 

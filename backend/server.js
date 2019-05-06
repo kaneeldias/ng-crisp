@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 var queue = require('express-queue');
 app.use(queue({ activeLimit: 100, queuedLimit: -1 }));
 
+var res_body = {};
 
 process.on('uncaughtException', function (err) {
     log(err)
@@ -196,23 +197,25 @@ app.route('/api/conversation/answered-by-week/:week_start/:week_end').get().post
     promiseResponse(promise, res);
 });
 
-app.route('/api/conversation/active-by-country/:week_start/:week_end').get((req, res) => {
+app.route('/api/conversation/active-by-country/:week_start/:week_end').post((req, res) => {
     var column = req.params.column;
     var week_start = req.params.week_start;
     var week_end = req.params.week_end;
+    var options = req.body.options;
     log("GET request to /api/conversation/active-by-country/" + week_start + "/" + week_end);
     var res_body = {};
-    var promise = Conversation.getActiveByCountry(week_start, week_end)
+    var promise = Conversation.getActiveByCountry(week_start, week_end, options)
     promiseResponse(promise, res);
 });
 
-app.route('/api/conversation/answered-by-country/:week_start/:week_end').get((req, res) => {
+app.route('/api/conversation/answered-by-country/:week_start/:week_end').post((req, res) => {
     var column = req.params.column;
     var week_start = req.params.week_start;
     var week_end = req.params.week_end;
+    var options = req.body.options;
     log("GET request to /api/conversation/answered-by-country/" + week_start + "/" + week_end);
     var res_body = {};
-    var promise = Conversation.getAnsweredByCountry(week_start, week_end)
+    var promise = Conversation.getAnsweredByCountry(week_start, week_end, options)
     promiseResponse(promise, res);
 });
 
@@ -244,12 +247,30 @@ app.route('/api/conversation/answered-by-operator/:start/:end').post((req, res) 
     promiseResponse(promise, res);
 });
 
+app.route('/api/conversation/active-by-operator/:start/:end').post((req, res) => {
+    var start = req.params.start;
+    var end = req.params.end;
+    var options = req.body.options;
+    log("GET request to /api/conversation/active-by-operator/");
+    var res_body = {};
+    var promise = Conversation.getActiveByOperator(start, end, options);
+    promiseResponse(promise, res);
+});
+
 app.route('/api/operator/set-assigned').post((req, res) => {
     var id = req.body.id;
     var assigned = req.body.assigned;
     log("GET request to /api/operator/set-assigned");
     var res_body = {};
     var promise = Operator.setAssigned(id, assigned);
+    promiseResponse(promise, res);
+});
+
+app.route('/api/operator/assigned/:name').get((req, res) => {
+    var name = req.params.name;
+    log("GET request to /api/operator/assigned/" + name);
+    var res_body = {};
+    var promise = Operator.getAssigned(name);
     promiseResponse(promise, res);
 });
 

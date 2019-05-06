@@ -1,7 +1,7 @@
-<div fxLayout="column wrap" fxLayoutAlign="space-around center" fxLayoutGap="40px" *ngIf="loaded"
+<div fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="40px" *ngIf="loaded"
     style="padding-top:10px; overflow:hidden">
 
-    <div fxLayout="row" fxFlex=100 fxLayoutAlign="start center" fxLayoutGap="40px">
+    <div fxLayout="row" fxFlex=100 fxLayoutAlign="start start" fxLayoutGap="40px">
 
         <div class="info_box" fxLayout="column">
             <div class="info_box title">Conversations Active</div>
@@ -26,27 +26,26 @@
             </div>
         </div>
 
-             <div class="info_box" fxLayout="column">
-                <div class="info_box title">Answered Percentage</div>
-                <div class="info_box val">
-                    {{stats.answered_percentage}}
-                    <mat-icon matSuffix style="color:green" *ngIf="changes.answered_percentage > 0">trending_up
-                    </mat-icon>
-                    <mat-icon matSuffix style="color:red" *ngIf="changes.answered_percentage < 0">trending_down
-                    </mat-icon>
-                </div>
+        <div class="info_box" fxLayout="column">
+            <div class="info_box title">Answered Percentage</div>
+            <div class="info_box val">
+                {{stats.answered_percentage}}
+                <mat-icon matSuffix style="color:green" *ngIf="changes.answered_percentage > 0">trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.answered_percentage < 0">trending_down
+                </mat-icon>
             </div>
-    
+        </div>
+
 
 
 
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="space-around center">
+    <div fxLayout="row" fxLayoutAlign="start center">
         <app-active-answered-conversations-chart [start]="report.start" [end]="report.week_end" [filter]="gst" width=490
             height=267 fxFlex=33>
         </app-active-answered-conversations-chart>
-
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-around center">
@@ -62,6 +61,30 @@
         <app-operator-conversations-answered-pie-chart [start]="report.week" [end]="report.week_end" [filter]="gst"
             width='500' height='300'></app-operator-conversations-answered-pie-chart>
 
+    </div>
+
+    <div fXLayout="column" fxFlex=100>
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <mat-form-field>
+                <mat-label>Select Operator</mat-label>
+                <mat-select [(value)]="selected_operator">
+                    <mat-option *ngFor="let operator of gst" [value]="operator">
+                        {{operator}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <app-operator-assigned-table [start]="report.week" [end]="report.week_end" [operator]="selected_operator"
+                perPage="5" style="border-style:solid; border-color:rgba(0,0,0,0.15); border-width:1px;">
+            </app-operator-assigned-table>
+
+            <app-conversations-active-answered-by-country-chart [start]="report.week" [end]="report.week_end" show=10
+                width=830 height=370 [filter]="[selected_operator]">
+            </app-conversations-active-answered-by-country-chart>
+
+
+        </div>
     </div>
 </div>
 

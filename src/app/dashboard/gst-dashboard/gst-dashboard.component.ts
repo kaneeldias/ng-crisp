@@ -28,6 +28,8 @@ export class GstDashboardComponent implements OnInit {
     answered_percentage:1
   };
 
+  selected_operator:string;
+
   constructor(private operatorService:OperatorService,
     private conversationService:ConversationService,
      private snackBarService:SnackbarService) { }
@@ -40,6 +42,7 @@ export class GstDashboardComponent implements OnInit {
       result.forEach(function(operator:any){
         self.gst.push(operator.name);
       })
+      self.selected_operator = self.gst[0];
       self.loadData();
     })
     .catch(function(error){
@@ -92,3 +95,4 @@ export class GstDashboardComponent implements OnInit {
   }
 
 }
+

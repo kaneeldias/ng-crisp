@@ -8,7 +8,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule, MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginator, MatPaginatorModule, MatSnackBarModule, MatTabsModule, MatProgressSpinnerModule, MatSidenavModule, MatNavList, MatListModule} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule, MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginator, MatPaginatorModule, MatSnackBarModule, MatTabsModule, MatProgressSpinnerModule, MatSidenavModule, MatNavList, MatListModule, MatSelectModule} from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { MainAddComponentComponent } from './main-add-component/main-add-component.component';
@@ -41,6 +41,7 @@ import { EntityDashboardComponent } from './dashboard/entity-dashboard/entity-da
 import { OperatorConversationsAnsweredPieChartComponent } from './charts/operator-conversations-answered-pie-chart/operator-conversations-answered-pie-chart.component';
 import { EditAssignedCountriesDialogComponent } from './dialogs/edit-assigned-countries-dialog/edit-assigned-countries-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import { OperatorAssignedTableComponent } from './tables/operator-assigned-table/operator-assigned-table.component';
 
 
 
@@ -73,6 +74,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     EntityDashboardComponent,
     OperatorConversationsAnsweredPieChartComponent,
     EditAssignedCountriesDialogComponent,
+    OperatorAssignedTableComponent,
     ],
   imports: [
     BrowserModule,
@@ -84,7 +86,7 @@ import {MatDialogModule} from '@angular/material/dialog';
     FlexLayoutModule,
     MatButtonModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatCardModule, MatGridListModule,
     MatTableModule, MatDatepickerModule, MatNativeDateModule, MatSortModule, MatPaginatorModule, MatSnackBarModule, MatTabsModule,
-    MatProgressSpinnerModule, MatSidenavModule, MatListModule, MatDialogModule,
+    MatProgressSpinnerModule, MatSidenavModule, MatListModule, MatDialogModule, MatSelectModule,
     Ng2GoogleChartsModule, PapaParseModule, HttpClientModule
     
   ],

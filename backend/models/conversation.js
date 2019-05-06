@@ -1,6 +1,5 @@
 const { DB } = require('../db');
 var mysql = require('mysql');
-var Operator = require("../models/operator");
 var Common = require("../common");
 var Operator = require("./operator");
 
@@ -258,7 +257,7 @@ module.exports = class Conversation {
         country_map.forEach(function (r) {
             if (r.code == code) {
                 country = r.name;
-                 return r.name;
+                return r.name;
             }
         })
         return country;
@@ -269,7 +268,7 @@ module.exports = class Conversation {
         country_map.forEach(function (r) {
             if (r.name == name) {
                 country = r.code;
-                 return r.code;
+                return r.code;
             }
         })
         return country;
@@ -383,7 +382,7 @@ module.exports = class Conversation {
             var inserts = [start, end];
             sql = mysql.format(sql, inserts);
 
-            if(options != undefined && options.filter != undefined){
+            if (options != undefined && options.filter != undefined) {
                 sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, DATE_FORMAT(STR_TO_DATE(CONCAT(YEAR(timestamp), WEEK(timestamp,1)-1, 'Monday'), '%X %V %W'), '%Y-%m-%d') as week FROM messages INNER JOIN conversations on messages.conversation_id = conversations.conversation_id WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND conversations.country IN (SELECT DISTINCT(country) FROM assigned_countries WHERE operator_id IN (SELECT operator_id FROM operators WHERE name IN (?))) GROUP BY week";
                 inserts = [start, end, options.filter];
                 sql = mysql.format(sql, inserts);
@@ -423,7 +422,7 @@ module.exports = class Conversation {
         });
     }
 
-    static getActiveByCountry(start, end) {
+    static getActiveByCountry(start, end, options) {
         return new Promise(function (resolve, reject) {
 
             var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country " +
@@ -431,6 +430,15 @@ module.exports = class Conversation {
                 "WHERE DATE(messages.timestamp) BETWEEN ? AND ? GROUP BY conversations.country " +
                 "ORDER BY `count` DESC";
             var inserts = [start, end];
+
+            if (options != undefined && options.filter != undefined) {
+                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country " +
+                    "FROM messages INNER JOIN conversations on conversations.conversation_id = messages.conversation_id " +
+                    "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND conversations.country IN (SELECT country FROM assigned_countries WHERE operator_id IN (SELECT operator_id FROM operators WHERE name IN (?))) GROUP BY conversations.country " +
+                    "ORDER BY `count` DESC";
+                inserts = [start, end, options.filter];
+            }
+
             sql = mysql.format(sql, inserts);
             DB.runQuery(sql, function (error, results) {
                 if (error != undefined) {
@@ -458,7 +466,7 @@ module.exports = class Conversation {
         });
     }
 
-    static getAnsweredByCountry(start, end) {
+    static getAnsweredByCountry(start, end, options) {
         return new Promise(function (resolve, reject) {
 
             var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country " +
@@ -466,6 +474,15 @@ module.exports = class Conversation {
                 "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND messages.user_id IN (SELECT operator_id FROM operators) " +
                 "GROUP BY conversations.country ORDER BY `count` DESC";
             var inserts = [start, end];
+
+            if (options != undefined && options.filter != undefined) {
+                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country " +
+                    "FROM messages INNER JOIN conversations on conversations.conversation_id = messages.conversation_id " +
+                    "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND messages.user_id IN (SELECT operator_id FROM operators WHERE name IN (?)) " +
+                    "GROUP BY conversations.country ORDER BY `count` DESC";
+                inserts = [start, end, options.filter];
+            }
+
             sql = mysql.format(sql, inserts);
             DB.runQuery(sql, function (error, results) {
                 if (error != undefined) {
@@ -494,7 +511,7 @@ module.exports = class Conversation {
 
     }
 
-    static getAnsweredByOperatorType(start, end) {
+    static getAnsweredByOperatorType(start, end, options) {
         return new Promise(function (resolve, reject) {
 
             var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, operators.entity as entity, operators.sheet_name as name " +
@@ -503,6 +520,8 @@ module.exports = class Conversation {
                 "WHERE DATE(messages.timestamp) BETWEEN ? AND ? " +
                 "GROUP BY name";
             var inserts = [start, end];
+
+
             sql = mysql.format(sql, inserts);
             DB.runQuery(sql, function (error, results) {
                 if (error != undefined) {
@@ -510,6 +529,7 @@ module.exports = class Conversation {
                     return;
                 }
                 var r = {};
+                var Operator = require("./operator");
                 results.forEach(function (result) {
                     var type = Operator.getType(result.name, result.entity);
                     var count = result.count;
@@ -524,7 +544,7 @@ module.exports = class Conversation {
                     }
                     f.push(x);
                 }
-
+                console.log(f);
                 resolve(f);
                 return;
             });
@@ -561,5 +581,64 @@ module.exports = class Conversation {
             });
         });
     }
+
+    static getActiveByOperator(start, end, options) {
+
+        return new Promise(function (resolve, reject) {
+
+            var i_sql = "SELECT operators.name AS name, assigned_countries.country AS country FROM assigned_countries INNER JOIN operators ON operators.operator_id = assigned_countries.operator_id";
+
+            if (options != undefined && options.filter != undefined) {
+                i_sql = "SELECT operators.name AS name, assigned_countries.country AS country FROM assigned_countries INNER JOIN operators ON operators.operator_id = assigned_countries.operator_id WHERE operators.name IN (?)";
+                var i_inserts = [options.filter];
+                i_sql = mysql.format(i_sql, i_inserts);
+            }
+            DB.runQuery(i_sql, function (error, results) {
+                if (error != undefined) {
+                    reject(error);
+                    return;
+                }
+                var assigned = {};
+                var mid = {};
+                results.forEach(function (r) {
+                    if (assigned[Conversation.mapCountryCode(r.country)] == undefined) {
+                        assigned[Conversation.mapCountryCode(r.country)] = [];
+                    }
+                    if (mid[r.name] == undefined) mid[r.name] = 0;
+                    assigned[Conversation.mapCountryCode(r.country)].push(r.name);
+                })
+
+                Conversation.getActiveByCountry(start, end, options)
+                    .then(function (results) {
+                        results.forEach(function (r) {
+                            var country = r.country;
+                            var count = r.count;
+                            if (assigned[country] != undefined) {
+                                assigned[country].forEach(function (a) {
+                                    mid[a] += r.count;
+                                })
+                            }
+                        })
+                        var arr = [];
+                        for(var name in mid){
+                            var x = {
+                                name:name,
+                                count:mid[name]
+                            }
+                            arr.push(x);
+                        }
+                        resolve(arr);
+                        return;
+
+                    })
+                    .catch(function (error) {
+                        reject(error);
+                    })
+            });
+
+
+        });
+    }
+
 
 }

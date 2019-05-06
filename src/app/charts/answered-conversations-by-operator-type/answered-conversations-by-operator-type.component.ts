@@ -11,6 +11,8 @@ import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 })
 export class AnsweredConversationsByOperatorTypeComponent extends ChartComponent implements OnInit {
 
+  title = "Conversations Answered by Operator type"
+
   @Input() start: string = "2019-03-04";
   @Input() end: string = new Date().toISOString().split("T")[0];
 
