@@ -1,0 +1,53 @@
+<div fxLayout='column' fxLayoutAlign='stretch stretch' *ngIf="loaded">
+
+  <div fxLayout="row" fxLayoutAlign="space-around center" style="background-color:white">
+    <div fxFlex="20px"></div>
+    <div><h5>{{operator}}</h5></div>
+    <div fxFlex></div>
+    <mat-form-field appearance="standard">
+      <mat-label>Search</mat-label>
+      <input matInput (keyup)="applyFilter($event.target.value)">
+    </mat-form-field>
+    <div fxFlex="20px"></div>
+  </div>
+
+
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="active_conversations" matSortDirection="desc" flex=100 *ngIf="loaded">
+
+    <ng-container matColumnDef="country">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
+      <td mat-cell *matCellDef="let e">{{e.country}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="assigned">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned?</th>
+        <td mat-cell *matCellDef="let e">{{e.assigned}}</td>
+      </ng-container>
+
+    <ng-container matColumnDef="answered">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered by Operator</th>
+      <td mat-cell *matCellDef="let e">{{e.answered_conversations}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="answered_others">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered by Others</th>
+        <td mat-cell *matCellDef="let e">{{e.answered_others}}</td>
+      </ng-container>
+
+    <ng-container matColumnDef="active_conversations">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Active Conversations</th>
+        <td mat-cell *matCellDef="let e">{{e.active_conversations}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="answered_percentage">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered Percentage (by Operator)</th>
+          <td mat-cell *matCellDef="let e">{{e.answered_percentage*100 | number:'1.0-2'}}%</td>
+        </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[perPage,10]" showFirstLastButtons></mat-paginator>
+</div>

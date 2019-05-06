@@ -1,0 +1,26 @@
+<div fxLayout="row" fxLayoutAlign="space-around center" fxFlex=100>
+    <mat-card fxFlex=50>
+      <mat-card-title>Upload Operators CSV</mat-card-title>
+      
+      <div fxLayout="row" fxLayoutAlign="space-around center" *ngIf="!selected">
+          <input style="display:none" class="ng-hide" id="input-file-id" multiple type="file" #file (change)="onChange($event)"/>
+          <button (click)="file.click()" mat-stroked-button color="primary">Upload File</button>    
+      </div>
+  
+      <div fxLayout="column" fxLayoutAlign="space-around center" *ngIf="selected">
+        <div class="status">{{status}}</div>
+        <div *ngIf="status=='uploading...'">Uploading {{uploadCount}} of {{records}}</div>
+        <div *ngIf="status=='Done!'">{{uploadCount}} of {{records}} uploaded!</div>
+      </div>
+  
+  
+    </mat-card>
+  </div>
+  
+  <style>
+    .status{
+      font-size:22px;
+      font-weight:bold;
+    }
+  </style>
+  

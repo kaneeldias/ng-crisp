@@ -1,0 +1,106 @@
+<div fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="40px" *ngIf="loaded"
+    style="padding-top:10px; overflow:hidden">
+
+    <div fxLayout="row" fxFlex=100 fxLayoutAlign="start start" fxLayoutGap="40px">
+
+        <div class="info_box" fxLayout="column">
+            <div class="info_box title">Conversations Active</div>
+            <div class="info_box val">
+                {{stats.conversations_active}}
+                <mat-icon matSuffix style="color:green" *ngIf="changes.conversations_active > 0">trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.conversations_active < 0">trending_down
+                </mat-icon>
+            </div>
+        </div>
+
+
+        <div class="info_box" fxLayout="column">
+            <div class="info_box title">Conversations Answered</div>
+            <div class="info_box val">
+                {{stats.conversations_answered}}
+                <mat-icon matSuffix style="color:green" *ngIf="changes.conversations_answered > 0">trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.conversations_answered < 0">trending_down
+                </mat-icon>
+            </div>
+        </div>
+
+        <div class="info_box" fxLayout="column">
+            <div class="info_box title">Answered Percentage</div>
+            <div class="info_box val">
+                {{stats.answered_percentage}}
+                <mat-icon matSuffix style="color:green" *ngIf="changes.answered_percentage > 0">trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.answered_percentage < 0">trending_down
+                </mat-icon>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="start center">
+        <app-active-answered-conversations-chart [start]="report.start" [end]="report.week_end" [filter]="gst" width=490
+            height=267 fxFlex=33>
+        </app-active-answered-conversations-chart>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+
+
+        <app-operator-stats-table [start]="report.week" [end]="report.week_end" [filter]="gst" perPage="5" width=850
+            fxFlex=60 style="border-style:solid; border-color:rgba(0,0,0,0.15); border-width:1px;">
+
+        </app-operator-stats-table>
+
+        <app-operator-conversations-answered-chart [start]="report.week" [end]="report.week_end" [filter]="gst"
+            width='500' height='300'></app-operator-conversations-answered-chart>
+        <app-operator-conversations-answered-pie-chart [start]="report.week" [end]="report.week_end" [filter]="gst"
+            width='500' height='300'></app-operator-conversations-answered-pie-chart>
+
+    </div>
+
+    <div fXLayout="column" fxFlex=100>
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <mat-form-field>
+                <mat-label>Select Operator</mat-label>
+                <mat-select [(value)]="selected_operator">
+                    <mat-option *ngFor="let operator of gst" [value]="operator">
+                        {{operator}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <app-operator-assigned-table [start]="report.week" [end]="report.week_end" [operator]="selected_operator"
+                perPage="5" style="border-style:solid; border-color:rgba(0,0,0,0.15); border-width:1px;">
+            </app-operator-assigned-table>
+
+            <app-conversations-active-answered-by-country-chart [start]="report.week" [end]="report.week_end" show=10
+                width=830 height=370 [filter]="[selected_operator]">
+            </app-conversations-active-answered-by-country-chart>
+
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .info_box .title {
+        color: rgba(0, 0, 0, 0.54);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .info_box .val {
+        color: rgba(0, 0, 0, 0.87);
+        font-size: 14px;
+    }
+
+    .info_box .val mat-icon {
+        font-size: 14px;
+    }
+</style>

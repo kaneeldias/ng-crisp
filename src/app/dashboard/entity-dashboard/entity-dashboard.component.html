@@ -1,0 +1,11 @@
+<div fxLayout="row wrap" fxLayoutAlign="space-around center" *ngIf="loaded" style="padding-top:10px; overflow:hidden">
+  
+  <div fxLayout="row" fxLayoutAlign="space-around center">
+      <app-operator-stats-table [start]="report.week" [end]="report.week_end" [filter]="entities" perPage="5" width=850 fxFlex=60
+      style="border-style:solid; border-color:rgba(0,0,0,0.15); border-width:1px;">
+    
+      </app-operator-stats-table>
+
+      <app-operator-conversations-answered-chart [start]="report.week" [end]="report.week_end" [filter]="entities" width='500' height='300'></app-operator-conversations-answered-chart>
+  </div>
+</div>
