@@ -33,4 +33,12 @@ export class ChartComponent{
     options.pointSize = this.width/100;
   }
 
+  ngOnInit(){}
+
+  ngOnChanges() {
+    if(this.loaded == false) return;
+    this.loaded = false;
+    this.ngOnInit();
+  }
+
 }

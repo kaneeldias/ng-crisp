@@ -86,4 +86,10 @@ export class OverallDashboardComponentComponent implements OnInit {
 
     this.loaded = true;
   }
+
+  ngOnChanges() {
+    if(this.loaded == false) return;
+    this.loaded = false;
+    this.ngOnInit();
+  }
 }

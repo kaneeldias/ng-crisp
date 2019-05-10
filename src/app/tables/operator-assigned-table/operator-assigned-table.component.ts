@@ -24,7 +24,7 @@ export class OperatorAssignedTableComponent implements OnInit {
   public records = [];
   dataSource = new MatTableDataSource(this.records);
 
-  public loaded = true;
+  public loaded = false;
 
 
 
@@ -36,9 +36,8 @@ export class OperatorAssignedTableComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    console.log(this.start);
     var self = this;
-
+    self.records = [];
     var mid = {};
 
     var p1 = this.operatorService.getAssigned(this.operator)
@@ -121,6 +120,7 @@ export class OperatorAssignedTableComponent implements OnInit {
 
   ngOnChanges() {
     if (this.loaded == false) return;
+    this.loaded = false;
     this.records = [];
     this.ngOnInit();
   }

@@ -22,23 +22,28 @@ export class DashboardComponent implements OnInit {
     end: "2019-04-15"
   };
 
+  public weeks = [];
+
   public tabs = {
-    overall:false,
-    gst:false,
-    entity:false
+    overall: false,
+    gst: false,
+    entity: false
   }
 
   public loaded = false;
 
   constructor(private db: AngularFirestore, private mainWeekService: MainWeekService, private snackBarService: SnackbarService,
-    private conversationService:ConversationService) { }
+    private conversationService: ConversationService) { }
 
   ngOnInit() {
 
     var self = this;
     this.report.week = new Date().toISOString().split("T")[0];
-    this.mainWeekService.getLast(this.report.week, 1)
-      .then(function (records) {
+    this.mainWeekService.getLast(this.report.week, 1000)
+      .then(function (records: any) {
+        records.forEach(function (record: any) {
+          self.weeks.push(record.week_start);
+        })
         self.report.week = records[0].week_start;
         self.report.end = self.report.week;
         self.report.start = new Date().toISOString().split("T")[0];
@@ -52,7 +57,7 @@ export class DashboardComponent implements OnInit {
 
 
         var d = new Date(self.report.week);
-        self.report.prev_week = new Date(d.setDate(d.getDate()-7)).toISOString().split("T")[0];
+        self.report.prev_week = new Date(d.setDate(d.getDate() - 7)).toISOString().split("T")[0];
         console.log(self.report);
         self.loaded = true;
       })
@@ -63,16 +68,37 @@ export class DashboardComponent implements OnInit {
 
   }
 
-  tabChange(index: number){
-    if(index === 1){
+  tabChange(index: number) {
+    if (index === 1) {
       this.tabs.overall = true;
     }
-    if(index === 2){
+    if (index === 2) {
       this.tabs.gst = true;
     }
-    if(index === 3){
+    if (index === 3) {
       this.tabs.entity = true;
     }
+  }
+
+  weekChange() {
+    var week = this.report.week;
+    var date = new Date(week);
+    var week_end = new Date(date.setDate(date.getDate() + 6)).toISOString().split("T")[0];
+    var end = week;
+    var start = new Date(end);
+    start.setDate(start.getDate() - 28);
+    var start_s = start.toISOString().split("T")[0];
+    date = new Date(week);
+    var prev_week = new Date(date.setDate(date.getDate() - 7)).toISOString().split("T")[0];
+
+    this.report = {
+      week:week,
+      start:start_s,
+      end:end,
+      week_end:week_end,
+      prev_week:prev_week
+    }
+
   }
 
 }

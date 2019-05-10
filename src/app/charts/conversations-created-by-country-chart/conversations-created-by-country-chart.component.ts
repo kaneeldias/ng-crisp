@@ -55,6 +55,10 @@ export class ConversationsCreatedByCountryChartComponent extends ChartComponent 
 
   ngOnInit() {
     super.setParams();
+    this.chartData.dataTable = [
+      ['Country', 'Conversations Created']
+    ];
+
     var self = this;
     this.conversationService.getCreatedByCountry(this.start, this.end)
       .then(function (records: any) {

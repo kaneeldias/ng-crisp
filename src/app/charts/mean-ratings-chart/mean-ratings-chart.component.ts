@@ -68,6 +68,9 @@ export class MeanRatingsChartComponent extends ChartComponent {
   ngOnInit() {
     super.setParams();
     var self = this;
+    this.chartData.dataTable = [
+      ['Week Start', 'Mean Rating']
+    ];
     this.mainWeekService.getStat('mean_rating', this.start, this.end)
       .then(function (records) {
         records.forEach(record => {

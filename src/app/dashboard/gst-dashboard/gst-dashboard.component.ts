@@ -93,6 +93,11 @@ export class GstDashboardComponent implements OnInit {
 
     self.stats.answered_percentage = Math.round((self.stats.conversations_answered / self.stats.conversations_active) * 10000)/100;
   }
-
+  
+  ngOnChanges() {
+    if(this.loaded == false) return;
+    this.loaded = false;
+    this.ngOnInit();
+  }
 }
 

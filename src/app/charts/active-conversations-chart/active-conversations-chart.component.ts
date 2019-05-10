@@ -69,6 +69,9 @@ export class ActiveConversationsChartComponent extends ChartComponent {
   ngOnInit() {
     super.setParams();
     var self = this;
+    this.chartData.dataTable = [
+      ['Week Start', 'Active Conversations']
+    ],
     this.conversationService.getActiveByWeek(this.start, this.end)
       .then(function (records) {
         records.forEach(function(r:any){

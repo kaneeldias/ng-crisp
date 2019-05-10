@@ -274,6 +274,19 @@ app.route('/api/operator/assigned/:name').get((req, res) => {
     promiseResponse(promise, res);
 });
 
+app.route('/api/conversation/answered-breakdown-by-operator/:start/:end').post((req, res) => {
+    var start = req.params.start;
+    var end = req.params.end;
+    var options = req.body.options;
+    //var options = req.body.options;
+    //var options = {filter:['Rim Allouche']}
+    log("GET request to /api/conversation/answered-breakdown-by-operator/");
+    var res_body = {};
+    var promise = Conversation.getAnsweredBreakdownByOperator(start, end, options);
+    promiseResponse(promise, res);
+});
+
+
 
 function promiseResponse(promise, res) {
     var res_body = {};

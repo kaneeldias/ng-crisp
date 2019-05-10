@@ -59,6 +59,9 @@ export class AnsweredConversationsByOperatorTypeComponent extends ChartComponent
   ngOnInit() {
     super.setParams();
     var self = this;
+    this.chartData.dataTable = [
+      ['Type', 'Answered Conversations']
+    ];
     var mid = {};
     this.conversationService.getAnsweredByOperatorType(this.start, this.end)
       .then(function (records) {

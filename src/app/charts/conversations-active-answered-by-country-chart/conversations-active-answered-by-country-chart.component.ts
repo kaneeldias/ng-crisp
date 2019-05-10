@@ -67,6 +67,10 @@ export class ConversationsActiveAnsweredByCountryChartComponent extends ChartCom
 
   async ngOnInit() {
     super.setParams();
+    this.chartData.dataTable = [
+      ['Country', 'Answered Conversations', 'Unanswered Conversations']
+    ];
+
     var self = this;
     this.mid = {};
     var options: any = this.chartData.options;

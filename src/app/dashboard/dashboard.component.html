@@ -1,32 +1,41 @@
 <style>
     .mat-tab-group {
-        min-height:590px;
-        overflow-y:hidden;
+        min-height: 590px;
+        overflow-y: hidden;
     }
 </style>
 
 <mat-card fxLayout="row wrap" fxLayoutAlign="stretch center" *ngIf="loaded" style="background-color:white;">
-    <mat-card-title fxFlex=100>Report from {{report.week}} to {{report.week_end}}</mat-card-title>
+    <mat-card-title fxFlex=100>
+        <span>Report from </span>
+        <mat-form-field style="width:150px;">
+            <mat-label>Week Start</mat-label>
+            <mat-select [(value)]="report.week" (selectionChange)="weekChange()">
+                <mat-option *ngFor="let week of weeks" value="{{week}}">{{week}}</mat-option>
+            </mat-select>
+        </mat-form-field> 
+        <span>to {{report.week_end}}</span>
+    </mat-card-title>
     <mat-tab-group animationDuration="500ms" (selectedIndexChange)="tabChange($event)">
-        
+
         <mat-tab label="Hello">
-    
+
         </mat-tab>
 
         <mat-tab label="Overall Dashboard">
-            <app-overall-dashboard-component *ngIf="tabs.overall" [report]="report"  style="overflow:hidden"></app-overall-dashboard-component>
+            <app-overall-dashboard-component *ngIf="tabs.overall" [report]="report" style="overflow:hidden">
+            </app-overall-dashboard-component>
         </mat-tab>
 
         <mat-tab label="GST Dashboard">
 
-                <app-gst-dashboard *ngIf="tabs.gst" [report]="report"  style="overflow:hidden"></app-gst-dashboard>
+            <app-gst-dashboard *ngIf="tabs.gst" [report]="report" style="overflow:hidden"></app-gst-dashboard>
 
         </mat-tab>
-        <mat-tab label="Entity Dashboard">                
-            <app-entity-dashboard *ngIf="tabs.entity" [report]="report"  style="overflow:hidden"></app-entity-dashboard>
+        <mat-tab label="Entity Dashboard">
+            <app-entity-dashboard *ngIf="tabs.entity" [report]="report" style="overflow:hidden"></app-entity-dashboard>
         </mat-tab>
     </mat-tab-group>
 
 
 </mat-card>
-

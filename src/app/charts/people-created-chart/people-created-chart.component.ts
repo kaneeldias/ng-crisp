@@ -67,6 +67,9 @@ export class PeopleCreatedChartComponent extends ChartComponent {
 
   ngOnInit() {
     super.setParams();
+    this.chartData.dataTable = [
+      ['Week Start', '# of People Created']
+    ];
     var self = this;
     this.mainWeekService.getStat('people_created', this.start, this.end)
       .then(function (records) {

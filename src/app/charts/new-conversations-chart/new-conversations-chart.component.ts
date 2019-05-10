@@ -64,6 +64,10 @@ export class NewConversationsChartComponent extends ChartComponent implements On
   ngOnInit() {
     super.setParams();
     var self = this;
+    this.chartData.dataTable = [
+      ['Week Start', 'New Conversations']
+    ];
+
     this.mainWeekService.getStat('new_conversations', this.start, this.end)
       .then(function (records) {
         records.forEach(record => {

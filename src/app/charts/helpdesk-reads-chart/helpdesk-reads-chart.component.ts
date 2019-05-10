@@ -68,6 +68,7 @@ export class HelpdeskReadsChartComponent extends ChartComponent{
   ngOnInit() {
     super.setParams();
     var self = this;
+    this.chartData.dataTable = [ ['Week Start', '# of Reads']];
     this.mainWeekService.getStat('helpdesk_reads', this.start, this.end)
       .then(function (records) {
         records.forEach(record => {

@@ -136,4 +136,18 @@ export class ConversationService {
         })
     });
   }
+
+  public getAnsweredBreakdownByOperator(start:string, end:string, options:{}):Promise<[{}]>{
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var url = API.getUrl('conversation/answered-breakdown-by-operator/'+start+'/'+end);
+      self.http.post(url, {options:options}).toPromise()
+        .then(function (result:[{}]) {
+            resolve(result);
+        })
+        .catch(function (error) {
+          reject(error);
+        })
+    });
+  }
 }

@@ -57,6 +57,9 @@ export class ActiveAnsweredConversationsChartComponent extends ChartComponent im
 
   async ngOnInit() {
     super.setParams();
+    this.chartData.dataTable = [
+      ['Week Start', 'Active Conversations', 'Answered Conversations']
+    ]
     var self = this;
     var mid = {};
     var options = {

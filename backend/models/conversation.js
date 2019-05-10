@@ -620,10 +620,10 @@ module.exports = class Conversation {
                             }
                         })
                         var arr = [];
-                        for(var name in mid){
+                        for (var name in mid) {
                             var x = {
-                                name:name,
-                                count:mid[name]
+                                name: name,
+                                count: mid[name]
                             }
                             arr.push(x);
                         }
@@ -640,5 +640,108 @@ module.exports = class Conversation {
         });
     }
 
+    static getAnsweredBreakdownByOperator(start, end, options) {
+        return new Promise(async function (resolve, reject) {
 
+            var assigned = {};
+            var ans = {};
+
+            var Operator = require("./operator");
+            var p1 = Operator.getAssignedCountries()
+                .then(function (a) {
+                    assigned = a;
+                })
+                .catch(function (error) {
+                    reject(error);
+                })
+
+            await p1;
+            //console.log(assigned);
+            
+            var mid = {};
+
+            var p2 = Conversation.getAnsweredByCountryByOperator(start, end, options)
+                .then(function (results) {
+                    results.forEach(function(r){
+                        if(mid[r.name] == undefined){
+                            mid[r.name] = {
+                                assigned_answered:0,
+                                unassigned_answered:0
+                            }
+                        }
+                        if(assigned[r.name] != undefined && assigned[r.name].indexOf(r.country) != -1) mid[r.name].assigned_answered += r.count;
+                        else mid[r.name].unassigned_answered += r.count;
+                    })
+                    
+                    var arr  = [];
+                    for(var name in mid){
+                        var x = {
+                            name:name,
+                            assigned_answered:mid[name].assigned_answered,
+                            unassigned_answered:mid[name].unassigned_answered
+                        }
+                        arr.push(x);
+                        console.log(x);
+                    }
+                    resolve(arr);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    reject(error);
+                })
+
+
+
+        });
+    };
+
+
+
+    static getAnsweredByCountryByOperator(start, end, options) {
+        return new Promise(function (resolve, reject) {
+
+            var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country, operators.name AS name " +
+                "FROM messages INNER JOIN conversations on conversations.conversation_id = messages.conversation_id " +
+                "INNER JOIN operators on operators.operator_id = messages.user_id " +
+                "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND messages.user_id IN (SELECT operator_id FROM operators) " +
+                "GROUP BY conversations.country, operators.name ORDER BY `count` DESC";
+            var inserts = [start, end];
+
+            if (options != undefined && options.filter != undefined) {
+                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country, operators.name AS name " +
+                    "FROM messages INNER JOIN conversations on conversations.conversation_id = messages.conversation_id " +
+                    "INNER JOIN operators on operators.operator_id = messages.user_id " +
+                    "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND messages.user_id IN (SELECT operator_id FROM operators WHERE name IN (?)) " +
+                    "GROUP BY conversations.country, operators.name ORDER BY `count` DESC";
+                inserts = [start, end, options.filter];
+            }
+
+            sql = mysql.format(sql, inserts);
+            DB.runQuery(sql, function (error, results) {
+                if (error != undefined) {
+                    reject(error);
+                    return;
+                }
+                var arr = [];
+                results.forEach(function (result) {
+                    var x = {};
+                    if (result.country === "") x.country = "Unknown";
+                    else {
+                        let obj = country_map.find(o => {
+                            if (o.code === result.country) {
+                                x.country = o.name;
+                                return;
+                            }
+                        });
+                    }
+                    x.count = result.count;
+                    x.name = result.name;
+                    arr.push(x);
+                })
+                resolve(arr);
+                return;
+            });
+        });
+
+    }
 }

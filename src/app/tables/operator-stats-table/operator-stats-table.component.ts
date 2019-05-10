@@ -19,11 +19,11 @@ export class OperatorStatsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   @Input() public filter = ['Belgium', 'Bangladesh'];
-  displayedColumns: string[] = ['name', 'active', 'conversations_answered'];
+  displayedColumns: string[] = ['name', 'active', 'conversations_answered', 'assigned_answered', 'unassigned_answered'];
   public records = [];
   dataSource = new MatTableDataSource(this.records);
 
-  public loaded = true;
+  public loaded = false;
 
 
 
@@ -40,7 +40,7 @@ export class OperatorStatsTableComponent implements OnInit {
     var options = {
       filter: this.filter
     }
-
+    self.records = [];
     var mid = {};
     var p1 = this.conversationService.getAnsweredByOperator(this.start, this.end, options)
       .then(function (results) {
@@ -49,7 +49,9 @@ export class OperatorStatsTableComponent implements OnInit {
             mid[g.name] = {
               name: g.name,
               active_conversations: 0,
-              conversations_answered: 0
+              conversations_answered: 0,
+              assigned_answered:0,
+              unassigned_answered: 0
             }
           }
           var obj = {
@@ -73,7 +75,9 @@ export class OperatorStatsTableComponent implements OnInit {
             mid[g.name] = {
               name: g.name,
               active_conversations: 0,
-              conversations_answered: 0
+              conversations_answered: 0,
+              assigned_answered:0,
+              unassigned_answered: 0
             }
           }
           var obj = {
@@ -89,12 +93,37 @@ export class OperatorStatsTableComponent implements OnInit {
         self.snackBarService.openSnackBar("Internal Server Error. Could not fetch data.", "OK");
       })
 
-    await p1; await p2;
-    for(var name in mid){
+    var p3 = this.conversationService.getAnsweredBreakdownByOperator(this.start, this.end, options)
+      .then(function (results) {
+        results.forEach(function (g: any) {
+          if (mid[g.name] == undefined) {
+            mid[g.name] = {
+              name: g.name,
+              active_conversations: 0,
+              conversations_answered: 0,
+              assigned_answered:0,
+              unassigned_answered: 0
+            }
+          }
+          mid[g.name].assigned_answered = g.assigned_answered;
+          mid[g.name].unassigned_answered = g.unassigned_answered;
+        })
+
+      })
+      .catch(function (error) {
+        console.log(error);
+        self.snackBarService.openSnackBar("Internal Server Error. Could not fetch data.", "OK");
+      })
+
+    await p1; await p2; await p3;
+
+    for (var name in mid) {
       var r = {
-        name:name,
-        active_conversations:mid[name].active_conversations,
-        conversations_answered:mid[name].conversations_answered
+        name: name,
+        active_conversations: mid[name].active_conversations,
+        conversations_answered: mid[name].conversations_answered,
+        assigned_answered:mid[name].assigned_answered,
+        unassigned_answered:mid[name].unassigned_answered
       }
       self.records.push(r);
     }
@@ -107,6 +136,12 @@ export class OperatorStatsTableComponent implements OnInit {
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  ngOnChanges() {
+    if (this.loaded == false) return;
+    this.loaded = false;
+    this.ngOnInit();
   }
 
 }

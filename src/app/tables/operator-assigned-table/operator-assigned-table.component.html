@@ -1,4 +1,4 @@
-<div fxLayout='column' fxLayoutAlign='stretch stretch' *ngIf="loaded">
+<div fxLayout='column' fxLayoutAlign='stretch stretch'>
 
   <div fxLayout="row" fxLayoutAlign="space-around center" style="background-color:white">
     <div fxFlex="20px"></div>
@@ -13,7 +13,7 @@
 
 
 
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="active_conversations" matSortDirection="desc" flex=100 *ngIf="loaded">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="active_conversations" matSortDirection="desc" flex=100>
 
     <ng-container matColumnDef="country">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
@@ -50,4 +50,13 @@
   </table>
 
   <mat-paginator [pageSizeOptions]="[perPage,10]" showFirstLastButtons></mat-paginator>
+
+  <div *ngIf="!loaded" fxLayout="column" fxLayoutAlign="center center" [style.width.px]="width"
+    [style.height.px]="height" [style.backgroundColor]='red'>
+    <div fxLayout='row' fxLayoutAlign='center center'>
+      <h5>{{title}}</h5>
+    </div>
+    <mat-spinner [diameter]='50'></mat-spinner>
+  </div>
+
 </div>

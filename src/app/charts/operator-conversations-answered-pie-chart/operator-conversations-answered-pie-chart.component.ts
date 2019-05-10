@@ -57,6 +57,10 @@ export class OperatorConversationsAnsweredPieChartComponent extends ChartCompone
 
   ngOnInit() {
     super.setParams();
+    this.chartData.dataTable =  [
+      ['Operator', 'Conversations Answered']
+    ];
+
     var options = {
       filter:this.filter
     }

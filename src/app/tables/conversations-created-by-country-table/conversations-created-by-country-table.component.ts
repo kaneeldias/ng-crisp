@@ -25,12 +25,16 @@ export class ConversationsCreatedByCountryTableComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   
-  public loaded = true;
+  public loaded = false;
 
   constructor(private conversationService: ConversationService, private snackBarService: SnackbarService) { }
 
   async ngOnInit() {
     var self = this;
+    self.records = [];
+    self.mid = {};
+    self.dataSource = new MatTableDataSource(this.records);
+
     var p1 = this.conversationService.getCreatedByCountry(this.start, this.end)
       .then(function (records: any) {
         records.forEach(function (r) {
@@ -71,8 +75,6 @@ export class ConversationsCreatedByCountryTableComponent implements OnInit {
     await p2;
     await p3;
 
-    self.loaded = true;
-
 
     for (var country in this.mid) {
       var new_convos = this.mid[country][0];
@@ -95,10 +97,17 @@ export class ConversationsCreatedByCountryTableComponent implements OnInit {
     self.dataSource = new MatTableDataSource(self.records);
     self.dataSource.sort = self.sort;
     self.dataSource.paginator = self.paginator;
+    self.loaded = true;
   }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  ngOnChanges() {
+    if(this.loaded == false) return;
+    this.loaded = false;
+    this.ngOnInit();
   }
 
 

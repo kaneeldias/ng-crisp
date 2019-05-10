@@ -1,4 +1,4 @@
-<div fxLayout='column' fxLayoutAlign='stretch stretch' *ngIf="loaded">
+<div fxLayout='column' fxLayoutAlign='stretch stretch'>
 
     <div fxLayout="row" fxLayoutAlign="space-around center" style="background-color:white">
       <div fxFlex="20px"></div>
@@ -13,7 +13,7 @@
   
   
   
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="conversations_answered" matSortDirection="desc" flex=100  *ngIf="loaded">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="conversations_answered" matSortDirection="desc" flex=100 >
   
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Operator</th>
@@ -22,7 +22,7 @@
 
       
       <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Active Conversations</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned Conversations</th>
           <td mat-cell *matCellDef="let e">{{e.active_conversations}}</td>
         </ng-container>
   
@@ -31,10 +31,28 @@
         <td mat-cell *matCellDef="let e">{{e.conversations_answered}}</td>
       </ng-container>
 
+      <ng-container matColumnDef="assigned_answered">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered (assigned)</th>
+        <td mat-cell *matCellDef="let e">{{e.assigned_answered}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="unassigned_answered">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered (unassigned)</th>
+        <td mat-cell *matCellDef="let e">{{e.unassigned_answered}}</td>
+      </ng-container>
   
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   
     <mat-paginator [pageSizeOptions]="[perPage,10]" showFirstLastButtons></mat-paginator>
+
+    <div *ngIf="!loaded" fxLayout="column" fxLayoutAlign="center center" [style.width.px]="width"
+    [style.height.px]="height" [style.backgroundColor]='red'>
+    <div fxLayout='row' fxLayoutAlign='center center'>
+      <h5>{{title}}</h5>
+    </div>
+    <mat-spinner [diameter]='50'></mat-spinner>
+  </div>
+
   </div>

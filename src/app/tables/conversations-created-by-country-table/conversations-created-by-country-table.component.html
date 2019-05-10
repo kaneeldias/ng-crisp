@@ -1,8 +1,10 @@
-<div fxLayout='column' fxLayoutAlign='stretch stretch' *ngIf="loaded">
+<div fxLayout='column' fxLayoutAlign='stretch stretch'>
 
   <div fxLayout="row" fxLayoutAlign="space-around center" style="background-color:white">
     <div fxFlex="20px"></div>
-    <div><h5>Country Breakdown</h5></div>
+    <div>
+      <h5>Country Breakdown</h5>
+    </div>
     <div fxFlex></div>
     <mat-form-field appearance="standard">
       <mat-label>Search</mat-label>
@@ -13,7 +15,8 @@
 
 
 
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="conversations_created" matSortDirection="desc" flex=100  *ngIf="loaded">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z0" matSort matSortActive="active_conversations"
+    matSortDirection="desc" flex=100>
 
     <ng-container matColumnDef="country">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
@@ -26,23 +29,32 @@
     </ng-container>
 
     <ng-container matColumnDef="active_conversations">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Active Conversations</th>
-        <td mat-cell *matCellDef="let e">{{e.active_conversations}}</td>
-      </ng-container>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Active Conversations</th>
+      <td mat-cell *matCellDef="let e">{{e.active_conversations}}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="answered_conversations">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered Conversations</th>
-          <td mat-cell *matCellDef="let e">{{e.answered_conversations}}</td>
-        </ng-container>
+    <ng-container matColumnDef="answered_conversations">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Answered Conversations</th>
+      <td mat-cell *matCellDef="let e">{{e.answered_conversations}}</td>
+    </ng-container>
 
-        <ng-container matColumnDef="answered_percentage">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Percentage Answered</th>
-            <td mat-cell *matCellDef="let e">{{e.answered_percentage}}</td>
-          </ng-container>
+    <ng-container matColumnDef="answered_percentage">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Percentage Answered</th>
+      <td mat-cell *matCellDef="let e">{{e.answered_percentage}}</td>
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 
   <mat-paginator [pageSizeOptions]="[perPage]" showFirstLastButtons></mat-paginator>
+
+  <div *ngIf="!loaded" fxLayout="column" fxLayoutAlign="center center" [style.width.px]="width"
+    [style.height.px]="height" [style.backgroundColor]='red'>
+    <div fxLayout='row' fxLayoutAlign='center center'>
+      <h5>{{title}}</h5>
+    </div>
+    <mat-spinner [diameter]='50'></mat-spinner>
+  </div>
+
 </div>
