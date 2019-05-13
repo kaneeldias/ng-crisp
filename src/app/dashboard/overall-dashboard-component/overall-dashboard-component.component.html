@@ -16,7 +16,7 @@
 </style>
 
 <div fxLayout="row wrap" fxLayoutAlign="space-around center" *ngIf="loaded" style="padding-top:10px; overflow:hidden">
-    <div fxLayout="row" fxFlex=100 fxLayoutGap="40px"  style="overflow:hidden">
+    <div fxLayout="row" fxFlex=100 fxLayoutGap="40px" style="overflow:hidden">
         <div class="info_box" fxLayout="column">
             <div class="info_box title">Helpdesk Reads</div>
             <div class="info_box val">
@@ -61,16 +61,6 @@
                 </mat-icon>
             </div>
         </div>
-        <div class="info_box" fxLayout="column">
-            <div class="info_box title">Mean Rating</div>
-            <div class="info_box val">
-                {{stats.mean_rating}}
-                <mat-icon matSuffix style="color:green" *ngIf="changes.mean_rating > 0">trending_up
-                </mat-icon>
-                <mat-icon matSuffix style="color:red" *ngIf="changes.mean_rating < 0">trending_down
-                </mat-icon>
-            </div>
-        </div>
 
         <div class="info_box" fxLayout="column">
             <div class="info_box title">Active Conversations</div>
@@ -86,34 +76,51 @@
         </div>
 
         <div class="info_box" fxLayout="column">
-                <div class="info_box title">Answered Conversations</div>
-                <div class="info_box val">
-                    {{stats.answered_conversations}}
-                    <mat-icon matSuffix style="color:green" *ngIf="changes.answered_conversations > 0">
-                        trending_up
-                    </mat-icon>
-                    <mat-icon matSuffix style="color:red" *ngIf="changes.answered_conversations < 0">
-                        trending_down
-                    </mat-icon>
-                </div>
+            <div class="info_box title">Answered Conversations</div>
+            <div class="info_box val">
+                {{stats.answered_conversations}}
+                <mat-icon matSuffix style="color:green" *ngIf="changes.answered_conversations > 0">
+                    trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.answered_conversations < 0">
+                    trending_down
+                </mat-icon>
             </div>
+        </div>
+
+        <div class="info_box" fxLayout="column">
+            <div class="info_box title">Mean Rating</div>
+            <div class="info_box val">
+                {{stats.mean_rating | number : '1.2-2'}}
+
+
+                <mat-icon matSuffix style="color:green" *ngIf="changes.mean_rating > 0">trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.mean_rating < 0">trending_down
+                </mat-icon>
+            </div>
+        </div>
+
 
     </div>
     <app-helpdesk-reads-chart [start]="report.start" [end]="report.end" width=450 height=267 fxFlex=33>
     </app-helpdesk-reads-chart>
     <app-people-created-chart [start]="report.start" [end]="report.end" width=450 height=267 fxFlex=33>
     </app-people-created-chart>
-    <app-mean-ratings-chart [start]="report.start" [end]="report.end" width=450 height=267 fxFlex=33>
-    </app-mean-ratings-chart>
-    <app-new-conversations-chart [start]="report.start" [end]="report.end" width=490 height=267
-        fxFlex=33>
+
+    <!--<app-mean-ratings-chart [start]="report.start" [end]="report.end" width=450 height=267 fxFlex=33>
+    </app-mean-ratings-chart>-->
+    <app-ratings-chart [start]="report.start" [end]="report.week_end" width=450 height=267 fxFlex=33>
+    </app-ratings-chart>
+
+    <app-new-conversations-chart [start]="report.start" [end]="report.end" width=490 height=267 fxFlex=33>
     </app-new-conversations-chart>
     <app-active-answered-conversations-chart [start]="report.start" [end]="report.week_end" width=490 height=267
         fxFlex=33>
     </app-active-answered-conversations-chart>
     <div style="width:490px; height:267px;" flex=33; fxLayout='row' fxLayoutAlign="center center">
-            <app-answered-conversations-by-operator-type  [start]="report.week" [end]="report.week_end"  width=300 height=267>
-</app-answered-conversations-by-operator-type>
+        <app-answered-conversations-by-operator-type [start]="report.week" [end]="report.week_end" width=300 height=267>
+        </app-answered-conversations-by-operator-type>
 
     </div>
 
@@ -121,18 +128,17 @@
 
 
     <div fxlayout="row" fxLayoutAlign="start center" flex=100>
-        <app-conversations-created-by-country-table [start]="report.week" [end]="report.week_end"
-            perPage=10 fxFlex=40
+        <app-conversations-created-by-country-table [start]="report.week" [end]="report.week_end" perPage=10 fxFlex=40
             style="border-style:solid; border-color:rgba(0,0,0,0.15); border-width:1px;">
         </app-conversations-created-by-country-table>
         <div fxLayout="column" flex=60>
 
-            <app-conversations-created-by-country-chart [start]="report.week" [end]="report.week_end"
-                show=10 width=830 height=370>
+            <app-conversations-created-by-country-chart [start]="report.week" [end]="report.week_end" show=10 width=830
+                height=370>
             </app-conversations-created-by-country-chart>
 
-            <app-conversations-active-answered-by-country-chart [start]="report.week"
-                [end]="report.week_end" show=10 width=830 height=370>
+            <app-conversations-active-answered-by-country-chart [start]="report.week" [end]="report.week_end" show=10
+                width=830 height=370>
             </app-conversations-active-answered-by-country-chart>
 
         </div>

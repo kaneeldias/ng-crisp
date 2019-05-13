@@ -42,6 +42,7 @@ import { OperatorConversationsAnsweredPieChartComponent } from './charts/operato
 import { EditAssignedCountriesDialogComponent } from './dialogs/edit-assigned-countries-dialog/edit-assigned-countries-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { OperatorAssignedTableComponent } from './tables/operator-assigned-table/operator-assigned-table.component';
+import { RatingsChartComponent } from './charts/ratings-chart/ratings-chart.component';
 
 
 
@@ -75,6 +76,7 @@ import { OperatorAssignedTableComponent } from './tables/operator-assigned-table
     OperatorConversationsAnsweredPieChartComponent,
     EditAssignedCountriesDialogComponent,
     OperatorAssignedTableComponent,
+    RatingsChartComponent,
     ],
   imports: [
     BrowserModule,

@@ -9,6 +9,7 @@ const { log } = require('./log');
 var MainRecord = require("./models/main_record");
 var Operator = require("./models/operator");
 var Conversation = require("./models/conversation");
+var Rating = require("./models/rating");
 
 app.use(bodyParser.json());
 
@@ -286,7 +287,17 @@ app.route('/api/conversation/answered-breakdown-by-operator/:start/:end').post((
     promiseResponse(promise, res);
 });
 
-
+app.route('/api/rating/by-week/:start/:end').post((req, res) => {
+    var start = req.params.start;
+    var end = req.params.end;
+    var options = req.body.options;
+    //var options = req.body.options;
+    //options = {filter:['khushali agarwal']}
+    log("GET request to /api/rating/by-week/");
+    var res_body = {};
+    var promise = Rating.getByWeek(start, end, options);
+    promiseResponse(promise, res);
+});
 
 function promiseResponse(promise, res) {
     var res_body = {};

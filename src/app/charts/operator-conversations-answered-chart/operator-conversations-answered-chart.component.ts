@@ -23,16 +23,19 @@ export class OperatorConversationsAnsweredChartComponent extends ChartComponent 
     ],
     options: {
       title: 'Conversations Answered by Operators',
+      isStacked: true,
       width: 750,
       height: 400,
       series: {
-        0: { color: '#3a539b' }
+        0: { color: '#26a65b', targetAxisIndex: 0 },
+        1: { color: '#4183d7', targetAxisIndex: 0 },
+        2: { color: '#abb7b7', targetAxisIndex: 0 }
       },
       chartArea: {
         width: '85%',
         left: 70
       },
-      legend: 'none',
+      legend: 'top',
       hAxis: {
         format: "YYYY-MM-dd",
         groupByRowLabel: true,
@@ -56,34 +59,73 @@ export class OperatorConversationsAnsweredChartComponent extends ChartComponent 
     private conversationService:ConversationService, private snackBar:SnackbarService
   ) { super()}
 
-  ngOnInit() {
+  async ngOnInit() {
     super.setParams();
     this.chartData.dataTable = [
-      ['Operator', 'Conversations Answered']
+      ['Operator', 'Answered (assigned)', 'Answered (unassigned)', 'Unanswered',]
     ];
 
     var options = {
       filter:this.filter
     }
+
+    var mid = {};
     var self = this;
-    this.conversationService.getAnsweredByOperator(this.start, this.end, options)
+    
+    var p1 = this.conversationService.getActiveByOperator(this.start, this.end, options)
     .then(function(results){
 
-      results.sort(function(a:any, b:any){
-        if(a.count < b.count) return 1;
-        else return - 1;
-      })
 
       results.forEach(function(r:any){
-        var array = [r.name, r.count];
-        self.chartData.dataTable.push(array);
+        if(mid[r.name] == undefined){
+          mid[r.name] = {
+            active:0,
+            answered_assigned:0,
+            answered_unassigned:0
+          }
+        }
+        mid[r.name].active += r.count;
       })
-      self.loaded = true;
     })
     .catch(function(error){
       console.log(error);
       self.snackBar.openSnackBar("Internal Server Error. Cannot load conversations answered chart", "OK");
     })
+
+    var p2 = this.conversationService.getAnsweredBreakdownByOperator(this.start, this.end, options)
+    .then(function(results){  
+
+      results.forEach(function(r:any){
+        if(mid[r.name] == undefined){
+          mid[r.name] = {
+            active:0,
+            answered_assigned:0,
+            answered_unassigned:0
+          }
+        }
+        mid[r.name].answered_assigned += r.assigned_answered;
+        mid[r.name].answered_unassigned += r.unassigned_answered;
+      })
+    })
+    .catch(function(error){
+      console.log(error);
+      self.snackBar.openSnackBar("Internal Server Error. Cannot load conversations answered chart", "OK");
+    })
+
+    await p1; await p2;
+    console.log(mid);
+    for(var name in mid){
+      var x = [
+        name,
+        mid[name].answered_assigned,
+        mid[name].answered_unassigned,
+        mid[name].active - mid[name].answered_assigned
+      ]
+      self.chartData.dataTable.push(x);
+    }
+
+    self.loaded = true;
+
   }
 
 }

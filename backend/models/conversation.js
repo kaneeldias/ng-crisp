@@ -689,9 +689,6 @@ module.exports = class Conversation {
                     console.log(error);
                     reject(error);
                 })
-
-
-
         });
     };
 

@@ -19,7 +19,7 @@ export class OperatorStatsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   @Input() public filter = ['Belgium', 'Bangladesh'];
-  displayedColumns: string[] = ['name', 'active', 'conversations_answered', 'assigned_answered', 'unassigned_answered'];
+  displayedColumns: string[] = ['name', 'active', 'assigned_answered', 'unassigned_answered', 'conversations_answered'];
   public records = [];
   dataSource = new MatTableDataSource(this.records);
 

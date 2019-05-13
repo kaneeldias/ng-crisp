@@ -3,6 +3,8 @@ import { MainWeekService } from 'src/app/main-week/main-week.service';
 import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 import { ConversationService } from 'src/app/conversation/conversation.service';
 import { WeekDay } from '@angular/common';
+import { RatingsChartComponent } from 'src/app/charts/ratings-chart/ratings-chart.component';
+import { RatingsService } from 'src/app/ratings/ratings.service';
 
 @Component({
   selector: 'app-overall-dashboard-component',
@@ -21,6 +23,7 @@ export class OverallDashboardComponentComponent implements OnInit {
     new_conversations: 1,
     conversations_assigned: 1,
     mean_rating: 1,
+    rating_count:0,
     answered_conversations:1,
   };
   changes = {
@@ -29,6 +32,7 @@ export class OverallDashboardComponentComponent implements OnInit {
     new_conversations: 1,
     conversations_assigned: 1,
     mean_rating: 1,
+    rating_count:0,
     active_conversations: 1,
     answered_conversations:1,
   };
@@ -36,7 +40,7 @@ export class OverallDashboardComponentComponent implements OnInit {
   public loaded = true;
 
   constructor(private mainWeekService: MainWeekService, private snackBarService: SnackbarService,
-    private conversationService:ConversationService) { }
+    private conversationService:ConversationService, private ratingsService:RatingsService) { }
 
   ngOnInit() {
     //console.log(this.report);
@@ -53,7 +57,7 @@ export class OverallDashboardComponentComponent implements OnInit {
         if (records[0].people_created - records[1].people_created < 0) self.changes.people_created = -1;
         if (records[0].new_conversations - records[1].new_conversations < 0) self.changes.new_conversations = -1;
         if (records[0].conversations_assigned - records[1].conversations_assigned < 0) self.changes.conversations_assigned = -1;
-        if (records[0].mean_rating - records[1].mean_rating < 0) self.changes.mean_rating = -1;
+        //if (records[0].mean_rating - records[1].mean_rating < 0) self.changes.mean_rating = -1;
         self.loaded = true;
       })
       .catch(function (error) {
@@ -76,6 +80,18 @@ export class OverallDashboardComponentComponent implements OnInit {
     .then(function(result:any){
         self.stats.answered_conversations = result[1].count;
         if (result[1].count < result[0].count) self.changes.answered_conversations = -1;
+    })
+    .catch(function(error){
+      console.log(error);
+      self.snackBarService.openSnackBar("Internal Server Error. Could not fetch spec data.", "OK");
+    })
+
+    this.ratingsService.getByWeek(self.report.prev_week, self.report.week_end)
+    .then(function(result:any){
+        self.stats.mean_rating = result[1].average;
+        //self.stats.rating_count = result[1].count;
+        if (result[1].average < result[0].average) self.changes.mean_rating = -1;
+        //if (result[1].count < result[0].count) self.changes.answered_conversations = -1;
     })
     .catch(function(error){
       console.log(error);

@@ -29,10 +29,23 @@
         <div class="info_box" fxLayout="column">
             <div class="info_box title">Answered Percentage</div>
             <div class="info_box val">
-                {{stats.answered_percentage}}
+                {{stats.answered_percentage}}%
                 <mat-icon matSuffix style="color:green" *ngIf="changes.answered_percentage > 0">trending_up
                 </mat-icon>
                 <mat-icon matSuffix style="color:red" *ngIf="changes.answered_percentage < 0">trending_down
+                </mat-icon>
+            </div>
+        </div>
+
+        <div class="info_box" fxLayout="column">
+            <div class="info_box title">Mean Rating</div>
+            <div class="info_box val">
+                {{stats.mean_rating | number : '1.2-2'}}
+
+
+                <mat-icon matSuffix style="color:green" *ngIf="changes.mean_rating > 0">trending_up
+                </mat-icon>
+                <mat-icon matSuffix style="color:red" *ngIf="changes.mean_rating < 0">trending_down
                 </mat-icon>
             </div>
         </div>
@@ -44,8 +57,12 @@
 
     <div fxLayout="row" fxLayoutAlign="start center">
         <app-active-answered-conversations-chart [start]="report.start" [end]="report.week_end" [filter]="gst" width=490
-            height=267 fxFlex=33>
+            height=267>
         </app-active-answered-conversations-chart>
+
+        <app-ratings-chart [start]="report.start" [end]="report.week_end" width=490
+        height=267 [filter]="gst">
+        </app-ratings-chart>
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-around center">
@@ -82,8 +99,15 @@
             <app-conversations-active-answered-by-country-chart [start]="report.week" [end]="report.week_end" show=10
                 width=830 height=370 [filter]="[selected_operator]">
             </app-conversations-active-answered-by-country-chart>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <app-active-answered-conversations-chart [start]="report.start" [end]="report.week_end" [filter]="[selected_operator]" width=490
+                height=267>
+            </app-active-answered-conversations-chart>
 
-
+            <app-ratings-chart [start]="report.start" [end]="report.week_end" width=490
+            height=267 [filter]="[selected_operator]">
+            </app-ratings-chart>
         </div>
     </div>
 </div>
