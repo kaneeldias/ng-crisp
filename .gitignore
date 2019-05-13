@@ -3,7 +3,6 @@ backend/db.js
 src/app/config.ts
 
 # compiled output
-/dist
 /tmp
 /out-tsc
 # Only exists if Bazel was run
