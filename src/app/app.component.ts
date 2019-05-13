@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogConfig, MatDialog, MatSnackBar } from '@angular/material';
+import {Router} from "@angular/router"
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,9 @@ import { MatDialogConfig, MatDialog, MatSnackBar } from '@angular/material';
 export class AppComponent {
   title = 'crisp-ng';
   
-  constructor() {}
+  constructor(private router: Router) {
+    this.router.navigate(['/dashboard'])
+   }
 
 
   
