@@ -3,6 +3,7 @@ import { OperatorService } from 'src/app/operator/operator.service';
 import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 import { ConversationService } from 'src/app/conversation/conversation.service';
 import { log } from 'util';
+import { RatingsService } from 'src/app/ratings/ratings.service';
 
 @Component({
   selector: 'app-entity-dashboard',
@@ -20,19 +21,22 @@ export class EntityDashboardComponent implements OnInit {
   stats = {
     conversations_answered:0,
     conversations_active:0,
-    answered_percentage:0
+    answered_percentage:0,
+    mean_rating:0
   };
   changes = {
     conversations_answered:1,
     conversations_active:1,
-    answered_percentage:1
+    answered_percentage:1,
+    mean_rating:1
   };
 
   selected_operator:string;
 
   constructor(private operatorService:OperatorService,
     private conversationService:ConversationService,
-     private snackBarService:SnackbarService) { }
+     private snackBarService:SnackbarService,
+     private ratingsService:RatingsService) { }
 
   async ngOnInit() {
     console.log(this.report);
@@ -84,7 +88,19 @@ export class EntityDashboardComponent implements OnInit {
       self.snackBarService.openSnackBar("Internal Server Error. Could not data", "OK");
     })
 
-    await p1; await p2;
+    var p3 = this.ratingsService.getByWeek(self.report.prev_week, self.report.week_end, options)
+    .then(function(result:any){
+        self.stats.mean_rating = result[1].average;
+        //self.stats.rating_count = result[1].count;
+        if (result[1].average < result[0].average) self.changes.mean_rating = -1;
+        //if (result[1].count < result[0].count) self.changes.answered_conversations = -1;
+    })
+    .catch(function(error){
+      console.log(error);
+      self.snackBarService.openSnackBar("Internal Server Error. Could not fetch spec data.", "OK");
+    })
+
+    await p1; await p2; await p3;
     var p = self.stats.conversations_answered / self.stats.conversations_active;
     var p_old = old[0]/old[1];
     if(p < p_old){
@@ -93,12 +109,11 @@ export class EntityDashboardComponent implements OnInit {
 
     self.stats.answered_percentage = Math.round((self.stats.conversations_answered / self.stats.conversations_active) * 10000)/100;
   }
-
+  
   ngOnChanges() {
     if(this.loaded == false) return;
     this.loaded = false;
     this.ngOnInit();
   }
-
 }
 

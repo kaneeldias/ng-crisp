@@ -39,6 +39,7 @@ import { GstDashboardComponent } from './dashboard/gst-dashboard/gst-dashboard.c
 import { OperatorConversationsAnsweredChartComponent } from './charts/operator-conversations-answered-chart/operator-conversations-answered-chart.component';
 import { EntityDashboardComponent } from './dashboard/entity-dashboard/entity-dashboard.component';
 import { OperatorConversationsAnsweredPieChartComponent } from './charts/operator-conversations-answered-pie-chart/operator-conversations-answered-pie-chart.component';
+import { OperatorConversationsAssignedPieChartComponent } from './charts/operator-conversations-assigned-pie-chart/operator-conversations-assigned-pie-chart.component';
 import { EditAssignedCountriesDialogComponent } from './dialogs/edit-assigned-countries-dialog/edit-assigned-countries-dialog.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import { OperatorAssignedTableComponent } from './tables/operator-assigned-table/operator-assigned-table.component';
@@ -74,6 +75,7 @@ import { RatingsChartComponent } from './charts/ratings-chart/ratings-chart.comp
     OperatorConversationsAnsweredChartComponent,
     EntityDashboardComponent,
     OperatorConversationsAnsweredPieChartComponent,
+    OperatorConversationsAssignedPieChartComponent,
     EditAssignedCountriesDialogComponent,
     OperatorAssignedTableComponent,
     RatingsChartComponent,

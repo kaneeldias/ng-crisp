@@ -11,6 +11,7 @@ var Operator = require("./models/operator");
 var Conversation = require("./models/conversation");
 var Rating = require("./models/rating");
 
+
 app.use(bodyParser.json());
 
 var queue = require('express-queue');
@@ -22,11 +23,12 @@ process.on('uncaughtException', function (err) {
     log(err)
 });
 
-var corsOptions = {
-    origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204 
-}
-app.use(cors(corsOptions))
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+  
 
 app.listen(3000, () => {
     console.log('Server started!')
@@ -36,7 +38,7 @@ app.route('/').get((req, res) => {
     res.send({ 'msg': 'yay' });
 })
 
-app.route('/api/main-record').put((req, res) => {
+app.route('/api/main-record').post((req, res) => {
     try {
         log("PUT request to /api/main-record");
         var res_body = {};

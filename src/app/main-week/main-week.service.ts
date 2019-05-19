@@ -72,7 +72,7 @@ export class MainWeekService {
   }
   public insert(record: MainWeek): Observable<any> {
     var url =  API.getUrl('main-record');
-    var x = this.http.put(url, record);
+    var x = this.http.post(url, record);
     return x;
   }
 

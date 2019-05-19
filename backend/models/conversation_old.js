@@ -383,7 +383,7 @@ module.exports = class Conversation {
             sql = mysql.format(sql, inserts);
 
             if (options != undefined && options.filter != undefined) {
-                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, DATE_FORMAT(STR_TO_DATE(CONCAT(YEAR(timestamp), WEEK(timestamp,1)-1, 'Monday'), '%X %V %W'), '%Y-%m-%d') as week FROM messages INNER JOIN conversations on messages.conversation_id = conversations.conversation_id WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND conversations.operator_id IN (SELECT operator_id FROM operators WHERE name IN (?)) GROUP BY week";
+                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, DATE_FORMAT(STR_TO_DATE(CONCAT(YEAR(timestamp), WEEK(timestamp,1)-1, 'Monday'), '%X %V %W'), '%Y-%m-%d') as week FROM messages INNER JOIN conversations on messages.conversation_id = conversations.conversation_id WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND conversations.country IN (SELECT DISTINCT(country) FROM assigned_countries WHERE operator_id IN (SELECT operator_id FROM operators WHERE name IN (?))) GROUP BY week";
                 inserts = [start, end, options.filter];
                 sql = mysql.format(sql, inserts);
             }
@@ -436,11 +436,6 @@ module.exports = class Conversation {
                     "FROM messages INNER JOIN conversations on conversations.conversation_id = messages.conversation_id " +
                     "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND conversations.country IN (SELECT country FROM assigned_countries WHERE operator_id IN (SELECT operator_id FROM operators WHERE name IN (?))) GROUP BY conversations.country " +
                     "ORDER BY `count` DESC";
-
-                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, conversations.country as country " +
-                "FROM messages INNER JOIN conversations on conversations.conversation_id = messages.conversation_id " +
-                "WHERE DATE(messages.timestamp) BETWEEN ? AND ? AND conversations.operator_id IN (SELECT operator_id FROM operators " + "WHERE name IN (?)) GROUP BY conversations.country " +
-                "ORDER BY `count` DESC"
                 inserts = [start, end, options.filter];
             }
 
@@ -591,29 +586,54 @@ module.exports = class Conversation {
 
         return new Promise(function (resolve, reject) {
 
-            /*var i_sql = "SELECT operators.name AS name, assigned_countries.country AS country FROM assigned_countries INNER JOIN operators ON operators.operator_id = assigned_countries.operator_id";
+            var i_sql = "SELECT operators.name AS name, assigned_countries.country AS country FROM assigned_countries INNER JOIN operators ON operators.operator_id = assigned_countries.operator_id";
 
             if (options != undefined && options.filter != undefined) {
                 i_sql = "SELECT operators.name AS name, assigned_countries.country AS country FROM assigned_countries INNER JOIN operators ON operators.operator_id = assigned_countries.operator_id WHERE operators.name IN (?)";
                 var i_inserts = [options.filter];
                 i_sql = mysql.format(i_sql, i_inserts);
-            }*/
-
-            var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) AS count, operators.name AS name FROM messages INNER join conversations on conversations.conversation_id = messages.conversation_id INNER JOIN operators ON operators.operator_id = conversations.operator_id WHERE DATE(timestamp) BETWEEN ? AND ? GROUP BY operators.name"
-            var inserts = [start, end];
-
-            if (options != undefined && options.filter != undefined) {
-                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) AS count, operators.name AS name FROM messages INNER join conversations on conversations.conversation_id = messages.conversation_id INNER JOIN operators ON operators.operator_id = conversations.operator_id WHERE DATE(timestamp) BETWEEN ? AND ? AND operators.name IN (?) GROUP BY operators.name"
-                inserts = [start, end, options.filter];
             }
-
-            sql = mysql.format(sql, inserts);
-            DB.runQuery(sql, function (error, results) {
+            DB.runQuery(i_sql, function (error, results) {
                 if (error != undefined) {
                     reject(error);
                     return;
                 }
-                resolve(results);
+                var assigned = {};
+                var mid = {};
+                results.forEach(function (r) {
+                    if (assigned[Conversation.mapCountryCode(r.country)] == undefined) {
+                        assigned[Conversation.mapCountryCode(r.country)] = [];
+                    }
+                    if (mid[r.name] == undefined) mid[r.name] = 0;
+                    assigned[Conversation.mapCountryCode(r.country)].push(r.name);
+                })
+
+                Conversation.getActiveByCountry(start, end, options)
+                    .then(function (results) {
+                        results.forEach(function (r) {
+                            var country = r.country;
+                            var count = r.count;
+                            if (assigned[country] != undefined) {
+                                assigned[country].forEach(function (a) {
+                                    mid[a] += r.count;
+                                })
+                            }
+                        })
+                        var arr = [];
+                        for (var name in mid) {
+                            var x = {
+                                name: name,
+                                count: mid[name]
+                            }
+                            arr.push(x);
+                        }
+                        resolve(arr);
+                        return;
+
+                    })
+                    .catch(function (error) {
+                        reject(error);
+                    })
             });
 
 
@@ -623,65 +643,52 @@ module.exports = class Conversation {
     static getAnsweredBreakdownByOperator(start, end, options) {
         return new Promise(async function (resolve, reject) {
 
-            var mid = {};
+            var assigned = {};
+            var ans = {};
 
-            var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as assigned_answered, operators.name FROM messages INNER JOIN conversations ON messages.conversation_id = conversations.conversation_id INNER JOIN operators ON messages.user_id = operators.operator_id WHERE DATE(timestamp) BETWEEN ? AND ?  AND messages.user_id IN (SELECT operator_id FROM operators) AND messages.user_id = conversations.operator_id GROUP BY operators.name";
-            var inserts = [start, end];
-
-            if(options != undefined && options.filter != undefined){
-                sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as assigned_answered, operators.name FROM messages INNER JOIN conversations ON messages.conversation_id = conversations.conversation_id INNER JOIN operators ON messages.user_id = operators.operator_id WHERE DATE(timestamp) BETWEEN ? AND ?  AND messages.user_id IN (SELECT operator_id FROM operators WHERE name IN (?)) AND messages.user_id = conversations.operator_id GROUP BY operators.name";
-                inserts = [start, end, options.filter];
-            }
-
-            sql = mysql.format(sql, inserts);
-            DB.runQuery(sql, function (error, results) {
-                if (error != undefined) {
+            var Operator = require("./operator");
+            var p1 = Operator.getAssignedCountries()
+                .then(function (a) {
+                    assigned = a;
+                })
+                .catch(function (error) {
                     reject(error);
-                    return;
-                }
-                results.forEach(function(r){
-                    if(mid[r.name] == undefined){
-                        mid[r.name] = {
-                            assigned_answered:0,
-                            unassigned_answered:0
-                        }
-                    }
-                    mid[r.name].assigned_answered = r.assigned_answered;
                 })
 
-                var sql2 = "SELECT COUNT(DISTINCT(messages.conversation_id)) as unassigned_answered, operators.name FROM messages INNER JOIN conversations ON messages.conversation_id = conversations.conversation_id INNER JOIN operators ON messages.user_id = operators.operator_id WHERE DATE(timestamp) BETWEEN ? AND ?  AND messages.user_id IN (SELECT operator_id FROM operators) AND messages.user_id != conversations.operator_id GROUP BY operators.name";
-                var inserts2 = [start, end];
+            await p1;
+            //console.log(assigned);
+            
+            var mid = {};
 
-                if(options != undefined && options.filter != undefined){
-                    sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as unassigned_answered, operators.name FROM messages INNER JOIN conversations ON messages.conversation_id = conversations.conversation_id INNER JOIN operators ON messages.user_id = operators.operator_id WHERE DATE(timestamp) BETWEEN ? AND ? AND messages.user_id IN (SELECT operator_id FROM operators WHERE name IN (?)) AND messages.user_id != conversations.operator_id GROUP BY operators.name";
-                    inserts = [start, end, options.filter];
-                }
-                sql2 = mysql.format(sql2, inserts2);
-
-
-                DB.runQuery(sql2, function (error, results) {
-                    if (error != undefined) {
-                        reject(error);
-                        return;
-                    }
+            var p2 = Conversation.getAnsweredByCountryByOperator(start, end, options)
+                .then(function (results) {
                     results.forEach(function(r){
-                        if(mid[r.name] != undefined){
-                            mid[r.name].unassigned_answered = r.unassigned_answered;
+                        if(mid[r.name] == undefined){
+                            mid[r.name] = {
+                                assigned_answered:0,
+                                unassigned_answered:0
+                            }
                         }
+                        if(assigned[r.name] != undefined && assigned[r.name].indexOf(r.country) != -1) mid[r.name].assigned_answered += r.count;
+                        else mid[r.name].unassigned_answered += r.count;
                     })
-
-                    var res = [];
-                    for(var key in mid){
-                        var arr = {
-                            name:key,
-                            assigned_answered:mid[key].assigned_answered,
-                            unassigned_answered:mid[key].unassigned_answered
+                    
+                    var arr  = [];
+                    for(var name in mid){
+                        var x = {
+                            name:name,
+                            assigned_answered:mid[name].assigned_answered,
+                            unassigned_answered:mid[name].unassigned_answered
                         }
-                        res.push(arr);
+                        arr.push(x);
+                        console.log(x);
                     }
-                    resolve(res);
-                });
-            });
+                    resolve(arr);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    reject(error);
+                })
         });
     };
 

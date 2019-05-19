@@ -74,6 +74,16 @@ export class OperatorAssignedTableComponent implements OnInit {
     var p2 = this.conversationService.getActiveByCountry(self.start, self.end, options)
       .then(function (records) {
         records.forEach(function (r: any) {
+          if (mid[r.country] == undefined) {
+            var x = {
+              country: r.country,
+              assigned: "NO",
+              active_conversations: 0,
+              answered_conversations: 0,
+              answered_total: 0
+            };
+            mid[r.country] = x;
+          }
           mid[r.country].active_conversations = r.count;
         })
       })
