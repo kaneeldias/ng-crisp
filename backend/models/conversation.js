@@ -296,6 +296,7 @@ module.exports = class Conversation {
                 }
 
                 results.forEach(function (row) {
+                    var Operator = require("./operator");
                     var type = Operator.getType(row.sheet_name, row.entity);
                     counts[type] += row.count;
                 })

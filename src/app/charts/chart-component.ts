@@ -8,7 +8,6 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { MainWeekService } from 'src/app/main-week/main-week.service';
-import { SnackbarService } from 'src/app/snackbar/snackbar.service';
 
 
 declare var $: any;

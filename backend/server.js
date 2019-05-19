@@ -3,6 +3,8 @@ const app = express()
 const cors = require('cors')
 const { DB } = require('./db');
 var mysql = require('mysql');
+const { Cache } = require('./cache');
+
 const bodyParser = require("body-parser");
 
 const { log } = require('./log');
@@ -20,15 +22,15 @@ app.use(queue({ activeLimit: 100, queuedLimit: -1 }));
 var res_body = {};
 
 process.on('uncaughtException', function (err) {
-    log(err)
+    console.log(err)
 });
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
-  
+});
+
 
 app.listen(3000, () => {
     console.log('Server started!')
@@ -149,155 +151,185 @@ app.route('/api/operator').get((req, res) => {
 });
 
 app.route('/api/main-record/:column/:week_start/:week_end').get((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    log("GET request to /api/main-record/" + column + "/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = MainRecord.getStat(column, week_start, week_end)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        log("GET request to /api/main-record/" + column + "/" + week_start + "/" + week_end);
+        var res_body = {};
+        return MainRecord.getStat(column, week_start, week_end)
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/assigned-breakdown/:week_start/:week_end').get((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    log("GET request to /api/conversation/assigned-breakdown/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getAssignedBreakdown(week_start, week_end)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        log("GET request to /api/conversation/assigned-breakdown/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getAssignedBreakdown(week_start, week_end)
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/created-by-country/:week_start/:week_end').get((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    log("GET request to /api/conversation/created-by-country/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getCreatedByCountry(week_start, week_end)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        log("GET request to /api/conversation/created-by-country/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getCreatedByCountry(week_start, week_end)
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/active-by-week/:week_start/:week_end').post((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    var options = req.body.options
-    log("GET request to /api/conversation/active-by-week/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getActiveByWeek(week_start, week_end, options)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        var options = req.body.options
+        log("GET request to /api/conversation/active-by-week/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getActiveByWeek(week_start, week_end, options);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/answered-by-week/:week_start/:week_end').get().post((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    var options = req.body.options;
-    log("GET request to /api/conversation/answered-by-week/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getAnsweredByWeek(week_start, week_end, options);
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        var options = req.body.options;
+        log("GET request to /api/conversation/answered-by-week/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getAnsweredByWeek(week_start, week_end, options);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/active-by-country/:week_start/:week_end').post((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    var options = req.body.options;
-    log("GET request to /api/conversation/active-by-country/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getActiveByCountry(week_start, week_end, options)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        var options = req.body.options;
+        log("GET request to /api/conversation/active-by-country/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getActiveByCountry(week_start, week_end, options);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/answered-by-country/:week_start/:week_end').post((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    var options = req.body.options;
-    log("GET request to /api/conversation/answered-by-country/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getAnsweredByCountry(week_start, week_end, options)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        var options = req.body.options;
+        log("GET request to /api/conversation/answered-by-country/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getAnsweredByCountry(week_start, week_end, options)
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/answered-by-operator-type/:week_start/:week_end').get((req, res) => {
-    var column = req.params.column;
-    var week_start = req.params.week_start;
-    var week_end = req.params.week_end;
-    log("GET request to /api/conversation/answered-by-operator-type/" + week_start + "/" + week_end);
-    var res_body = {};
-    var promise = Conversation.getAnsweredByOperatorType(week_start, week_end)
+    let promise = Cache.get(req, function () {
+        var column = req.params.column;
+        var week_start = req.params.week_start;
+        var week_end = req.params.week_end;
+        log("GET request to /api/conversation/answered-by-operator-type/" + week_start + "/" + week_end);
+        var res_body = {};
+        return Conversation.getAnsweredByOperatorType(week_start, week_end);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/operator/get-of-type/:type').get((req, res) => {
-    var type = req.params.type;
-    log("GET request to /api/operator/get-of-type/" + type);
-    var res_body = {};
-    var promise = Operator.getOfType(type);
+    let promise = Cache.get(req, function () {
+        var type = req.params.type;
+        log("GET request to /api/operator/get-of-type/" + type);
+        var res_body = {};
+        return Operator.getOfType(type);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/answered-by-operator/:start/:end').post((req, res) => {
-    var start = req.params.start;
-    var end = req.params.end;
-    var options = req.body.options;
-    log("GET request to /api/conversation/answered-by-operator/");
-    var res_body = {};
-    var promise = Conversation.getAnsweredByOperator(start, end, options);
+    let promise = Cache.get(req, function () {
+        var start = req.params.start;
+        var end = req.params.end;
+        var options = req.body.options;
+        log("GET request to /api/conversation/answered-by-operator/");
+        var res_body = {};
+        return Conversation.getAnsweredByOperator(start, end, options);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/active-by-operator/:start/:end').post((req, res) => {
-    var start = req.params.start;
-    var end = req.params.end;
-    var options = req.body.options;
-    log("GET request to /api/conversation/active-by-operator/");
-    var res_body = {};
-    var promise = Conversation.getActiveByOperator(start, end, options);
+    let promise = Cache.get(req, function () {
+        var start = req.params.start;
+        var end = req.params.end;
+        var options = req.body.options;
+        log("GET request to /api/conversation/active-by-operator/");
+        var res_body = {};
+        return Conversation.getActiveByOperator(start, end, options);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/operator/set-assigned').post((req, res) => {
-    var id = req.body.id;
-    var assigned = req.body.assigned;
-    log("GET request to /api/operator/set-assigned");
-    var res_body = {};
-    var promise = Operator.setAssigned(id, assigned);
+    let promise = Cache.get(req, function () {
+        var id = req.body.id;
+        var assigned = req.body.assigned;
+        log("GET request to /api/operator/set-assigned");
+        var res_body = {};
+        return Operator.setAssigned(id, assigned);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/operator/assigned/:name').get((req, res) => {
-    var name = req.params.name;
-    log("GET request to /api/operator/assigned/" + name);
-    var res_body = {};
-    var promise = Operator.getAssigned(name);
+    let promise = Cache.get(req, function () {
+        var name = req.params.name;
+        log("GET request to /api/operator/assigned/" + name);
+        var res_body = {};
+        return Operator.getAssigned(name);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/conversation/answered-breakdown-by-operator/:start/:end').post((req, res) => {
-    var start = req.params.start;
-    var end = req.params.end;
-    var options = req.body.options;
-    //var options = req.body.options;
-    //var options = {filter:['Rim Allouche']}
-    log("GET request to /api/conversation/answered-breakdown-by-operator/");
-    var res_body = {};
-    var promise = Conversation.getAnsweredBreakdownByOperator(start, end, options);
+    let promise = Cache.get(req, function () {
+        var start = req.params.start;
+        var end = req.params.end;
+        var options = req.body.options;
+        //var options = req.body.options;
+        //var options = {filter:['Rim Allouche']}
+        log("GET request to /api/conversation/answered-breakdown-by-operator/");
+        var res_body = {};
+        return Conversation.getAnsweredBreakdownByOperator(start, end, options);
+    });
     promiseResponse(promise, res);
 });
 
 app.route('/api/rating/by-week/:start/:end').post((req, res) => {
-    var start = req.params.start;
+    let promise = Cache.get(req, function () {
+        var start = req.params.start;
     var end = req.params.end;
     var options = req.body.options;
     //var options = req.body.options;
     //options = {filter:['khushali agarwal']}
     log("GET request to /api/rating/by-week/");
     var res_body = {};
-    var promise = Rating.getByWeek(start, end, options);
+    return Rating.getByWeek(start, end, options);
+    });
     promiseResponse(promise, res);
 });
 
@@ -310,14 +342,15 @@ function promiseResponse(promise, res) {
             res.send(res_body);
         })
         .catch(function (error) {
+            console.log(error);
             log(error.code);
             res.status(500);
             res_body.error = true;
-            if(error.code != undefined) res_body.message = error.code;
+            if (error.code != undefined) res_body.message = error.code;
             else res_body.message = error;
             res.send(res_body);
         })
-        .finally(function(){
+        .finally(function () {
             log("COMPLETE request");
         });
 }
