@@ -13,13 +13,25 @@
             <mat-select [(value)]="report.week" (selectionChange)="weekChange()">
                 <mat-option *ngFor="let week of weeks" value="{{week}}">{{week}}</mat-option>
             </mat-select>
-        </mat-form-field> 
+        </mat-form-field>
         <span>to {{report.week_end}}</span>
     </mat-card-title>
     <mat-tab-group animationDuration="500ms" (selectedIndexChange)="tabChange($event)">
 
         <mat-tab label="Welcome" fxLayout="row" fxLayoutAlign="center center">
-           <h1>Welcome to the Dashboard</h1>
+            <h1>Welcome to the AIESEC - Crisp Dashboard</h1>
+
+            <div style="font-size:30px;">
+                To get started, click on one of tabs above. 
+            <br>
+            <br>
+
+            </div>
+
+            <div style="font-size:30px;">
+                You can change the date-range of the report by selecting the week start date from the dropdown.
+            </div>
+
         </mat-tab>
 
         <mat-tab label="Overall Dashboard">
@@ -34,6 +46,10 @@
         </mat-tab>
         <mat-tab label="Entity Dashboard">
             <app-entity-dashboard *ngIf="tabs.entity" [report]="report" style="overflow:hidden"></app-entity-dashboard>
+        </mat-tab>
+
+        <mat-tab label="Other Dashboard">
+            <app-entity-dashboard *ngIf="tabs.other" [report]="report" style="overflow:hidden" type="Other"></app-entity-dashboard>
         </mat-tab>
     </mat-tab-group>
 

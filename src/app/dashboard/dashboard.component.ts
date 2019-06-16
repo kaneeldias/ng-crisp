@@ -27,7 +27,8 @@ export class DashboardComponent implements OnInit {
   public tabs = {
     overall: false,
     gst: false,
-    entity: false
+    entity: false,
+    other:false
   }
 
   public loaded = false;
@@ -77,6 +78,10 @@ export class DashboardComponent implements OnInit {
     }
     if (index === 3) {
       this.tabs.entity = true;
+    }
+
+    if (index === 3) {
+      this.tabs.other = true;
     }
   }
 

@@ -5,6 +5,10 @@ class Cache {
 
     static get(req, fail) {
         return new Promise(function(resolve, reject){
+
+            /*fail().then(function(results){resolve(results);}).catch(function(error){reject(error)});
+            return;*/
+
             let method = req.method;
             let url = req.url.split("/api")[1];
             let body = JSON.stringify(req.body);

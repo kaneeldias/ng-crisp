@@ -559,7 +559,7 @@ module.exports = class Conversation {
 
     static getAnsweredByOperator(start, end, options) {
         return new Promise(function (resolve, reject) {
-            var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, operators.sheet_name as name " +
+            var sql = "SELECT COUNT(DISTINCT(messages.conversation_id)) as count, operators.name as name " +
                 "FROM messages " +
                 "INNER JOIN operators ON operators.operator_id = messages.user_id " +
                 "WHERE DATE(messages.timestamp) BETWEEN ? AND ? " +

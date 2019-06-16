@@ -13,7 +13,7 @@ import { RatingsService } from 'src/app/ratings/ratings.service';
 export class EntityDashboardComponent implements OnInit {
 
   @Input() report;
-
+  @Input() type;
   gst = [];
 
   loaded = false;
@@ -41,7 +41,9 @@ export class EntityDashboardComponent implements OnInit {
   async ngOnInit() {
     console.log(this.report);
     var self = this;
-    var p1 = this.operatorService.getOfType("Entity")
+    let type = "Entity";
+    if(this.type == "Other") type = "Other";
+    var p1 = this.operatorService.getOfType(type)
     .then(function(result:[]){
       result.forEach(function(operator:any){
         self.gst.push(operator.name);
