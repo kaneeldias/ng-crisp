@@ -19,6 +19,11 @@
     <mat-tab-group animationDuration="500ms" (selectedIndexChange)="tabChange($event)">
 
         <mat-tab label="Welcome" fxLayout="row" fxLayoutAlign="center center">
+
+                <app-conversations-created-by-country-table start="2019-04-16" end="2019-07-14" perPage=1000 fxFlex=40
+                style="border-style:solid; border-color:rgba(0,0,0,0.15); border-width:1px;">
+            </app-conversations-created-by-country-table>
+    
             <h1>Welcome to the AIESEC - Crisp Dashboard</h1>
 
             <div style="font-size:30px;">
